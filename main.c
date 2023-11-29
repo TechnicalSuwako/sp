@@ -19,6 +19,8 @@ const char* sofname = "sp";
 const char* version = "1.0.0";
 
 void helpme() {
+  printf("０７６ sp - シンプルなパスワードマネージャー\n");
+  printf("https://076.moe/ | https://gitler.moe/suwako/sp\n\n");
   printf("使い方：\n");
   printf("%s -i <gpg-id>               ：GPGと使ってパスワードストレージを初期設定\n", sofname);
   printf("%s -s <パスワード名>         ：パスワードを表示\n", sofname);
