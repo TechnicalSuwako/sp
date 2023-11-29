@@ -201,6 +201,14 @@ void addpass(char* file) {
   }
 
   snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  struct stat statbuf;
+  if (stat(gpgpath, &statbuf) == 0) {
+    free(gpgpath);
+    cleanup(ctx, key[0], in, out);
+    fprintf(stderr, "パスワードは既に存在しています。\n");
+    return;
+  }
+
   gpgfile = fopen(gpgpath, "wb");
   if (gpgfile == NULL) {
     perror("ファイルを開くに失敗。");
