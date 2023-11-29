@@ -2,6 +2,27 @@
 シンプルなパスワードマネージャー
 
 ## インストールする方法
+### CRUX
+```sh
+doas prt-get depinst gpgme gnupg pinentry
+```
+
+### Artix
+```sh
+doas pacman -S base-devel gpgme gnupg pinentry
+```
+
+### OpenBSD
+```sh
+doas pkg_add gmake gpgme gnupg pinentry
+```
+
+### FreeBSD
+```sh
+doas pkg install gmake gpgme gnupg pinentry
+```
+
+### 全部
 ```sh
 mkdir -p ~/.local/share/sp
 gpg --generate-key
