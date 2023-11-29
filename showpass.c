@@ -87,7 +87,6 @@ void showpass(char* file) {
     buffer[read_bytes] = '\0';
     printf("%s", buffer);
   }
-  puts("");
 
   // 掃除
   clean_up(ctx, in, out, gpgfile, gpgpath);

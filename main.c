@@ -5,7 +5,7 @@
 
 #include <gpgme.h>
 
-void initpass(char* gpgid);
+#include "initpass.h"
 #include "showpass.h"
 #include "yankpass.h"
 #include "listpass.h"
@@ -20,7 +20,7 @@ const char* version = "1.0.0";
 
 void helpme() {
   printf("使い方：\n");
-  /* printf("%s -i <gpg-id>               ：GPGと使ってパスワードストレージを初期設定\n", sofname); */
+  printf("%s -i <gpg-id>               ：GPGと使ってパスワードストレージを初期設定\n", sofname);
   printf("%s -s <パスワード名>         ：パスワードを表示\n", sofname);
   printf("%s -y <パスワード名>         ：パスワードを表示せずクリップボードにコピーする\n", sofname);
   printf("%s -l                        ：パスワード一覧を表示\n", sofname);
@@ -38,7 +38,7 @@ int main (int argc, char* argv[]) {
     return 0;
   }
 
-  if (argc == 3 && strcmp(argv[1], "-i") == 0) printf("TODO: 初期設定\n");
+  if (argc == 3 && strcmp(argv[1], "-i") == 0) initpass(argv[2]);
   else if (argc == 3 && strcmp(argv[1], "-s") == 0) showpass(argv[2]);
   else if (argc == 3 && strcmp(argv[1], "-y") == 0) yankpass(argv[2]);
   else if (argc == 2 && strcmp(argv[1], "-l") == 0) {
