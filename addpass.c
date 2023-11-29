@@ -78,7 +78,7 @@ void addpass(char* file) {
   // パスワードを保存する
   gpgme_ctx_t ctx;
   gpgme_error_t err;
-  gpgme_key_t key;
+  gpgme_key_t key[2] = {NULL, NULL};
   gpgme_data_t in, out;
   FILE *gpgfile;
 
@@ -144,14 +144,14 @@ void addpass(char* file) {
   keyid[strcspn(keyid, "\n")] = 0;
   fclose(keyfile);
 
-  err = gpgme_get_key(ctx, keyid, &key, 0);
+  err = gpgme_get_key(ctx, keyid, &key[0], 0);
   if (err) {
     fprintf(stderr, "鍵を受取に失敗： %s\n", gpgme_strerror(err));
     free(keyid);
     return;
   }
 
-  if (key == NULL) {
+  if (key[0] == NULL) {
     fprintf(stderr, "エラー：鍵はNULLです。\n");
     free(keyid);
     return;
@@ -160,14 +160,13 @@ void addpass(char* file) {
   free(keyid);
 
   // 暗号化
-  gpgme_key_t recp[1] = {key};
-  err = gpgme_op_encrypt(ctx, recp, GPGME_ENCRYPT_ALWAYS_TRUST, in, out);
+  err = gpgme_op_encrypt(ctx, &key[0], GPGME_ENCRYPT_ALWAYS_TRUST, in, out);
   if (err) {
     fprintf(stderr, "暗号化に失敗： %s\n", gpgme_strerror(err));
     gpgme_data_release(in);
     gpgme_data_release(out);
     gpgme_release(ctx);
-    gpgme_key_release(key);
+    gpgme_key_release(key[0]);
     return;
   }
 
@@ -179,7 +178,7 @@ void addpass(char* file) {
     gpgme_data_release(in);
     gpgme_data_release(out);
     gpgme_release(ctx);
-    gpgme_key_release(key);
+    gpgme_key_release(key[0]);
     perror("メモリを割当に失敗。");
     return;
   }
@@ -197,7 +196,7 @@ void addpass(char* file) {
       gpgme_data_release(in);
       gpgme_data_release(out);
       gpgme_release(ctx);
-      gpgme_key_release(key);
+      gpgme_key_release(key[0]);
       perror("ディレクトリを創作に失敗。");
       return;
     }
@@ -212,7 +211,7 @@ void addpass(char* file) {
     gpgme_data_release(in);
     gpgme_data_release(out);
     gpgme_release(ctx);
-    gpgme_key_release(key);
+    gpgme_key_release(key[0]);
     return;
   }
 
@@ -225,7 +224,7 @@ void addpass(char* file) {
     gpgme_data_release(in);
     gpgme_data_release(out);
     gpgme_release(ctx);
-    gpgme_key_release(key);
+    gpgme_key_release(key[0]);
     return;
   }
 
@@ -244,7 +243,7 @@ void addpass(char* file) {
   gpgme_data_release(in);
   gpgme_data_release(out);
   gpgme_release(ctx);
-  gpgme_key_release(key);
+  gpgme_key_release(key[0]);
 
   printf("パスワードを保存出来ました。\n");
 }

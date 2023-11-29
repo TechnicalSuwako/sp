@@ -25,7 +25,7 @@ void helpme() {
   //printf("%s -l                                       ：パスワード一覧を表示\n", sofname);
   printf("%s -a <パスワード名>                        ：パスワードを追加\n", sofname);
   //printf("%s -d <パスワード名>                        ：パスワードを削除\n", sofname);
-  //printf("%s -g <文字数> [risk|secure] <パスワード名> ：希望文字数でパスワードをランダムに作成して、追加する。risk＝英数字のみ（不安）、secure＝英数字＋特別文字（デフォルト）を使用\n", sofname);
+  //printf("%s -g <文字数> [risk|secure] <パスワード名> ：希望文字数でパスワードをランダムに作成する。risk＝英数字のみ（不安）、secure＝英数字＋特別文字（デフォルト）を使用\n", sofname);
   //printf("%s -o <パスワード名>\n                      ：ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する", sofname);
   printf("%s -h                                       ：ヘルプを表示\n", sofname);
   printf("%s -v                                       ：バージョンを表示\n", sofname);
