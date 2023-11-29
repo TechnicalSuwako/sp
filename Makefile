@@ -1,9 +1,9 @@
 NAME=sp
-VERSION=0.0.1
+VERSION=1.0.0
 # Linux、Haiku、かIllumos = /usr、FreeBSDかOpenBSD = /usr/local、NetBSD = /usr/pkg
 PREFIX=/usr
 CC=cc
-FILES=main.c showpass.c yankpass.c addpass.c
+FILES=main.c showpass.c yankpass.c addpass.c delpass.c
 CFLAGS=-Wall -Wextra -g
 LDFLAGS=-lgpgme
 
