@@ -35,7 +35,7 @@ void helpme() {
 int main (int argc, char* argv[]) {
   if (argc < 2) {
     helpme();
-    return 1;
+    return 0;
   }
 
   if (argc == 3 && strcmp(argv[1], "-i") == 0) printf("TODO: 初期設定\n");

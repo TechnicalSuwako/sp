@@ -6,6 +6,14 @@
 
 #include "showpass.h"
 
+void clean_up(gpgme_ctx_t ctx, gpgme_data_t in, gpgme_data_t out, FILE* gpgfile, char* gpgpath) {
+  if (gpgfile) fclose(gpgfile);
+  if (gpgpath) free(gpgpath);
+  gpgme_data_release(in);
+  gpgme_data_release(out);
+  gpgme_release(ctx);
+}
+
 void showpass(char* file) {
   gpgme_ctx_t ctx;
   gpgme_error_t err;
@@ -51,7 +59,12 @@ void showpass(char* file) {
     free(gpgpath);
     return;
   }
-  gpgme_data_new_from_stream(&in, gpgfile);
+
+  if (gpgme_data_new_from_stream(&in, gpgfile) != GPG_ERR_NO_ERROR || gpgme_data_new(&out) != GPG_ERR_NO_ERROR) {
+    fprintf(stderr, "GPGMEデータオブジェクトを創作に失敗。\n");
+    clean_up(ctx, in, out, gpgfile, gpgpath);
+    return;
+  }
 
   // データオブジェクトを創作
   gpgme_data_new(&out);
@@ -62,29 +75,20 @@ void showpass(char* file) {
     fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
 
     // 掃除
-    fclose(gpgfile);
-    free(gpgpath);
-    gpgme_data_release(in);
-    gpgme_data_release(out);
-    gpgme_release(ctx);
+    clean_up(ctx, in, out, gpgfile, gpgpath);
     return;
   }
 
   // 復号化したパスワードを表示する
   gpgme_data_seek(out, 0, SEEK_SET);
-
   char buffer[512];
   ssize_t read_bytes;
-  while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer))) > 0) {
+  while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer) - 1)) > 0) {
     buffer[read_bytes] = '\0';
     printf("%s", buffer);
   }
   puts("");
 
   // 掃除
-  fclose(gpgfile);
-  free(gpgpath);
-  gpgme_data_release(in);
-  gpgme_data_release(out);
-  gpgme_release(ctx);
+  clean_up(ctx, in, out, gpgfile, gpgpath);
 }
