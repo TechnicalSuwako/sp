@@ -5,42 +5,37 @@
 ### CRUX
 ```sh
 doas prt-get depinst gpgme gnupg pinentry
+doas make install
+```
+
+又は
+
+```sh
+doas su
+cd /etc/ports
+wget https://076.moe/repo/crux/suwaports.httpup
+echo "prtdir /usr/ports/suwaports" >> /etc/prt-get.conf
+ports -u
+prt-get depinst sp
 ```
 
 ### Artix
 ```sh
 doas pacman -S base-devel gpgme gnupg pinentry
+doas make install
 ```
 
 ### OpenBSD
 ```sh
 doas pkg_add gmake gpgme gnupg pinentry
+doas gmake install PREFIX=/usr/local
 ```
 
 ### FreeBSD
 ```sh
 doas pkg install gmake gpgme gnupg pinentry
-```
-
-### 全部
-```sh
-mkdir -p ~/.local/share/sp
-gpg --generate-key
-gpg -k | less
-```
-鍵をコピーして下さい。
-```sh
-echo "（コピーした鍵）" >> ~/.local/share/sp/.gpg-id
-```
-
-### Linux
-```sh
-make
-doas make install
-```
-
-### FreeBSDかOpenBSD
-```sh
-gmake
 doas gmake install PREFIX=/usr/local
 ```
+
+## 初期設定
+「gpg -k」でGPG鍵IDを確認して、「sp -i [GPG ID]」を実行して下さい。
