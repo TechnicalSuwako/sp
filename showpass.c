@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <locale.h>
 
 #include <gpgme.h>
@@ -83,9 +84,17 @@ void showpass(char* file) {
   gpgme_data_seek(out, 0, SEEK_SET);
   char buffer[512];
   ssize_t read_bytes;
+  bool islastnl = false;
+
   while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer) - 1)) > 0) {
-    buffer[read_bytes] = '\0';
-    printf("%s", buffer);
+    fwrite(buffer, 1, read_bytes, stdout);
+    if (buffer[read_bytes - 1] == '\n') {
+      islastnl = true;
+    }
+  }
+
+  if (!islastnl) {
+    putchar('\n');
   }
 
   // 掃除

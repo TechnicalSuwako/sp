@@ -57,13 +57,20 @@ void getpasswd(char* prompt, char*pw, size_t pwlen) {
   tcsetattr(fileno(stdin), TCSANOW, &new);
 
   // パスワードを読み込む
-  fgets(pw, pwlen, stdin);
+  if (fgets(pw, pwlen, stdin) != NULL) {
+    // あれば、改行を取り消す
+    size_t len = strlen(pw);
+    if (len > 0 && pw[len - 1] == '\n') {
+      pw[len - 1] = '\0';
+    } else {
+      // 掃除
+      int c;
+      while ((c = getchar()) != '\n' && c != EOF);
+    }
+  }
 
   // 端末設定をもとに戻す
   tcsetattr(fileno(stdin), TCSANOW, &old);
-
-  // 改行文字を取り消す
-  pw[strcspn(pw, "\n")] = 0;
 }
 
 void addpass(char* file) {
@@ -233,8 +240,14 @@ void addpass(char* file) {
 
   char buffer[512];
   ssize_t read_bytes;
+
   while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer))) > 0) {
-    fwrite(buffer, 1, read_bytes, gpgfile);
+    if (fwrite(buffer, 1, (size_t)read_bytes, gpgfile) != (size_t)read_bytes) {
+      perror("パスワードを書き込みに失敗");
+      free(gpgpath);
+      cleanup(ctx, key[0], in, out);
+      return;
+    }
   }
 
   // 掃除

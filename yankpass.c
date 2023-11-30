@@ -98,12 +98,18 @@ void yankpass(char* file) {
 
   char buffer[512];
   ssize_t read_bytes;
-  while ((read_bytes = gpgme_data_read(out, buffer, 511)) > 0) {
+
+  while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer))) > 0) {
+    if (buffer[read_bytes - 1] == '\n') {
+        read_bytes--;
+    }
     fwrite(buffer, 1, read_bytes, pipe);
   }
+
   pclose(pipe);
 
   // 45秒後、クリップボードから削除する
+  printf("パスワードをクリップボードに追加しました。\n45秒後はクリップボードから取り消されます。\n");
   sleep(45);
   system("echo -n | xclip -selection clipboard");
 

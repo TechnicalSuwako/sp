@@ -1,11 +1,11 @@
 NAME=sp
-VERSION=1.0.0
+VERSION=1.1.0
 # Linux、Haiku、かIllumos = /usr、FreeBSDかOpenBSD = /usr/local、NetBSD = /usr/pkg
 PREFIX=/usr
 CC=cc
-FILES=main.c showpass.c yankpass.c addpass.c delpass.c listpass.c genpass.c initpass.c
+FILES=main.c showpass.c yankpass.c addpass.c delpass.c listpass.c genpass.c initpass.c otppass.c
 CFLAGS=-Wall -Wextra -g
-LDFLAGS=-lgpgme
+LDFLAGS=-lgpgme -lcrypto
 
 all:
 	${CC} ${CFLAGS} -o ${NAME} ${FILES} ${LDFLAGS}
@@ -24,6 +24,9 @@ install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
+
+install-zsh:
+	cp sp-completion.zsh /usr/share/zsh/site-functions/_sp
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/${NAME}

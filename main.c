@@ -12,11 +12,11 @@
 #include "addpass.h"
 #include "delpass.h"
 #include "genpass.h"
-void otppass(char* file);
+#include "otppass.h"
 void helpme();
 
 const char* sofname = "sp";
-const char* version = "1.0.0";
+const char* version = "1.1.0";
 
 void helpme() {
   printf("０７６ sp - シンプルなパスワードマネージャー\n");
@@ -29,7 +29,7 @@ void helpme() {
   printf("%s -a <パスワード名>         ：パスワードを追加\n", sofname);
   printf("%s -d <パスワード名>         ：パスワードを削除\n", sofname);
   printf("%s -g <文字数> [risk|secure] ：希望文字数でパスワードをランダムに作成する。risk＝英数字のみ（不安）、secure＝英数字＋特別文字（デフォルト）を使用\n", sofname);
-  /* printf("%s -o <パスワード名>\n       ：ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する", sofname); */
+  printf("%s -o <パスワード名>\n       ：ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する\n", sofname);
   printf("%s -h                        ：ヘルプを表示\n", sofname);
   printf("%s -v                        ：バージョンを表示\n", sofname);
 }
@@ -64,7 +64,7 @@ int main (int argc, char* argv[]) {
     else if (argc == 4 && strcmp(argv[3], "secure") == 0) genpass(atoi(argv[2]), true);
     else helpme();
   }
-  else if (argc == 3 && strcmp(argv[1], "-o") == 0) printf("TODO: otp\n");
+  else if (argc == 3 && strcmp(argv[1], "-o") == 0) otppass(argv[2]);
   else if (argc == 2 && strcmp(argv[1], "-v") == 0) printf("%s-%s\n", sofname, version);
   else helpme();
 
