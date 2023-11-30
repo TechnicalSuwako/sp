@@ -16,6 +16,7 @@ clean:
 dist: clean
 	mkdir -p ${NAME}-${VERSION}
 	cp -R LICENSE.txt Makefile README.md CHANGELOG.md\
+		sp-completion.zsh\
 		*.c *.h ${NAME}-${VERSION}
 	tar zcfv ${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	rm -rf ${NAME}-${VERSION}
@@ -31,4 +32,4 @@ install-zsh:
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/${NAME}
 
-.PHONY: all clean dist install uninstall
+.PHONY: all clean dist install install-zsh uninstall
