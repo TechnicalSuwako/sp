@@ -1,3 +1,6 @@
+# 1.1.1
+* make install-zsh部分を修正
+
 # 1.1.0
 * TOTP対応
 * READMEファイルで使い方を詳しく説明する

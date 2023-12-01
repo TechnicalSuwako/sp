@@ -6,6 +6,7 @@
 ```sh
 doas prt-get depinst gpgme gnupg pinentry
 doas make install
+doas make install-zsh
 ```
 
 又は
@@ -23,18 +24,21 @@ prt-get depinst sp
 ```sh
 doas pacman -S base-devel gpgme gnupg pinentry
 doas make install
+doas make install-zsh
 ```
 
 ### OpenBSD
 ```sh
 doas pkg_add gmake gpgme gnupg pinentry
 doas gmake install PREFIX=/usr/local
+doas gmake install-zsh PREFIX=/usr/local
 ```
 
 ### FreeBSD
 ```sh
 doas pkg install gmake gpgme gnupg pinentry
 doas gmake install PREFIX=/usr/local
+doas gmake install-zsh PREFIX=/usr/local
 ```
 
 ## 初期設定

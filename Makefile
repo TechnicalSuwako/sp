@@ -1,5 +1,5 @@
 NAME=sp
-VERSION=1.1.0
+VERSION=1.1.1
 # Linux、Haiku、かIllumos = /usr、FreeBSDかOpenBSD = /usr/local、NetBSD = /usr/pkg
 PREFIX=/usr
 CC=cc
@@ -27,7 +27,7 @@ install: all
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
 
 install-zsh:
-	cp sp-completion.zsh /usr/share/zsh/site-functions/_sp
+	cp sp-completion.zsh ${DESTDIR}${PREFIX}/share/zsh/site-functions/_sp
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/${NAME}
