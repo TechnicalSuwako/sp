@@ -52,7 +52,7 @@ void yankpass(char* file) {
     return;
   }
 
-  sprintf(gpgpath, "%s%s%s%s", homedir, basedir, file, ext);
+  snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
     perror("ファイルを開くに失敗。");

@@ -18,7 +18,7 @@ void clean_up(gpgme_ctx_t ctx, gpgme_data_t in, gpgme_data_t out, FILE* gpgfile,
 void showpass(char* file) {
   gpgme_ctx_t ctx;
   gpgme_error_t err;
-  gpgme_data_t in, out;
+  gpgme_data_t in = NULL, out = NULL;
   FILE *gpgfile;
 
   // GPGMEライブラリを設置
@@ -52,7 +52,7 @@ void showpass(char* file) {
     return;
   }
 
-  sprintf(gpgpath, "%s%s%s%s", homedir, basedir, file, ext);
+  snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
     perror("ファイルを開くに失敗。");
@@ -61,7 +61,15 @@ void showpass(char* file) {
     return;
   }
 
-  if (gpgme_data_new_from_stream(&in, gpgfile) != GPG_ERR_NO_ERROR || gpgme_data_new(&out) != GPG_ERR_NO_ERROR) {
+  // ファイルからinデータオブジェクトを創作
+  if (gpgme_data_new_from_stream(&in, gpgfile) != GPG_ERR_NO_ERROR) {
+    fprintf(stderr, "GPGMEデータオブジェクトを創作に失敗。\n");
+    clean_up(ctx, in, out, gpgfile, gpgpath);
+    return;
+  }
+
+  // outデータオブジェクトを創作
+  if (gpgme_data_new(&out) != GPG_ERR_NO_ERROR) {
     fprintf(stderr, "GPGMEデータオブジェクトを創作に失敗。\n");
     clean_up(ctx, in, out, gpgfile, gpgpath);
     return;

@@ -16,7 +16,7 @@
 void helpme();
 
 const char* sofname = "sp";
-const char* version = "1.1.1";
+const char* version = "1.1.2";
 
 void helpme() {
   printf("０７６ sp - シンプルなパスワードマネージャー\n");
