@@ -74,8 +74,8 @@ void getpasswd(char* prompt, char*pw, size_t pwlen) {
 }
 
 void addpass(char* file) {
-  char pass[100];
-  char knin[100];
+  char pass[256];
+  char knin[256];
 
   // パスワードを受け取る
   getpasswd("パスワード： ", pass, sizeof(pass));
@@ -148,8 +148,8 @@ void addpass(char* file) {
     return;
   }
 
-  char* keyid = malloc(100);
-  if (!fgets(keyid, 100, keyfile)) {
+  char* keyid = malloc(256);
+  if (!fgets(keyid, 256, keyfile)) {
     perror("鍵IDを読込に失敗。");
     fclose(keyfile);
     free(keyid);
