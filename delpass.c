@@ -4,7 +4,7 @@
 
 #include "delpass.h"
 
-int delpass(char* file) {
+int delpass(char* file, int force) {
   // パスを準備
   char pwfile[512];
   char* homedir = getenv("HOME");
@@ -39,21 +39,25 @@ int delpass(char* file) {
   }
 
   // 削除を確認する
-  printf("パスワード「%s」を本当に削除する事が宜しいでしょうか？ (y/N): ", file);
-  int confirm = getchar();
-  if (confirm != 'y' && confirm != 'Y') {
-    printf("削除しませんでした。\n");
-    return -1;
-  }
+  if (force == 0) { // パスワードの変更のばあい、確認は不要
+    printf("パスワード「%s」を本当に削除する事が宜しいでしょうか？ (y/N): ", file);
+    int confirm = getchar();
+    if (confirm != 'y' && confirm != 'Y') {
+      printf("削除しませんでした。\n");
+      return -1;
+    }
 
-  int ch;
-  while ((ch = getchar()) != '\n' && ch != EOF);
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+  }
 
   if (unlink(pwfile) == -1) {
     perror("パスワードを削除出来ませんですた。");
     return -1;
   }
 
+  if (force == 1) return 0;
+
   printf("パスワードを削除しました。\n");
-  return -1;
+  return 0;
 }

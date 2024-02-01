@@ -19,15 +19,16 @@ const char* sofname = "sp";
 const char* version = "1.2.0";
 
 void helpme() {
-  printf("０７６ sp - シンプルなパスワードマネージャー\n");
-  printf("https://076.moe/ | https://gitler.moe/suwako/sp\n\n");
-  printf("使い方：\n");
+  printf("０７６ %s %s - シンプルなパスワードマネージャー\n", sofname, version);
+  printf("https://076.moe/ | https://gitler.moe/suwako/%s\n\n", sofname);
+  puts  ("使い方：\n");
   printf("%s -i <gpg-id>               ：GPGと使ってパスワードストレージを初期設定\n", sofname);
   printf("%s -s <パスワード名>         ：パスワードを表示\n", sofname);
   printf("%s -y <パスワード名>         ：パスワードを表示せずクリップボードにコピーする\n", sofname);
   printf("%s -l                        ：パスワード一覧を表示\n", sofname);
   printf("%s -a <パスワード名>         ：パスワードを追加\n", sofname);
   printf("%s -d <パスワード名>         ：パスワードを削除\n", sofname);
+  printf("%s -e <パスワード名>         ：パスワードを変更\n", sofname);
   printf("%s -g <文字数> [risk|secure] ：希望文字数でパスワードをランダムに作成する。risk＝英数字のみ（不安）、secure＝英数字＋特別文字（デフォルト）を使用\n", sofname);
   printf("%s -o <パスワード名>\n       ：ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する\n", sofname);
   printf("%s -h                        ：ヘルプを表示\n", sofname);
@@ -57,7 +58,11 @@ int main (int argc, char* argv[]) {
     listpass(basePath, 0);
   }
   else if (argc == 3 && strcmp(argv[1], "-a") == 0) addpass(argv[2]);
-  else if (argc == 3 && strcmp(argv[1], "-d") == 0) delpass(argv[2]);
+  else if (argc == 3 && strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);
+  else if (argc == 3 && strcmp(argv[1], "-e") == 0) {
+    delpass(argv[2], 1);
+    addpass(argv[2]);
+  }
   else if (strcmp(argv[1], "-g") == 0) {
     if (argc == 3) genpass(atoi(argv[2]), true);
     else if (argc == 4 && strcmp(argv[3], "risk") == 0) genpass(atoi(argv[2]), false);
