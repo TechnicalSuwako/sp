@@ -74,8 +74,34 @@ void getpasswd(char* prompt, char*pw, size_t pwlen) {
 }
 
 void addpass(char* file) {
+  // パスを準備
+  char* homedir = getenv("HOME");
+  if (homedir == NULL) {
+    perror("ホームディレクトリを受取に失敗。");
+    return;
+  }
+
+  char* basedir = "/.local/share/sp/";
+  char* ext = ".gpg";
+
   char pass[256];
   char knin[256];
+
+  int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
+  char* gpgpathchk = malloc(alllen);
+  if (gpgpathchk == NULL) {
+    perror("メモリを割当に失敗。");
+    return;
+  }
+
+  // ファイルが既に存在するかどうか確認
+  snprintf(gpgpathchk, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  if (access(gpgpathchk, F_OK) != -1) {
+    fprintf(stderr, "パスワードが既に存在しています。\n変更するには、「 sp -e %s 」を実行して下さい。\n", file);
+    free(gpgpathchk);
+    return;
+  }
+  free(gpgpathchk);
 
   // パスワードを受け取る
   getpasswd("パスワード： ", pass, sizeof(pass));
@@ -126,16 +152,6 @@ void addpass(char* file) {
 
   gpgme_data_new(&out);
 
-  // パスを準備
-  char* homedir = getenv("HOME");
-  if (homedir == NULL) {
-    perror("ホームディレクトリを受取に失敗。");
-    return;
-  }
-
-  char* basedir = "/.local/share/sp/";
-  char* ext = ".gpg";
-
   // 鍵を受け取る
   char keypath[256];
   snprintf(keypath, sizeof(keypath), "%s%s%s", homedir, basedir, ".gpg-id");
@@ -183,7 +199,6 @@ void addpass(char* file) {
   }
 
   // 暗号化したタイルを開く
-  int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
   char* gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
     cleanup(ctx, key[0], in, out);
