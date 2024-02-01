@@ -4,11 +4,12 @@ VERSION=1.2.0
 PREFIX=/usr
 CC=cc
 FILES=main.c showpass.c yankpass.c addpass.c delpass.c listpass.c genpass.c initpass.c otppass.c base32.c
-CFLAGS=-Wall -Wextra -g -I${PREFIX}/include -L${PREFIX}/lib
+CFLAGS=-Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
 LDFLAGS=-lgpgme -lcrypto
 
 all:
 	${CC} ${CFLAGS} -o ${NAME} ${FILES} ${LDFLAGS}
+	strip ${NAME}
 
 clean:
 	rm -f ${NAME}
