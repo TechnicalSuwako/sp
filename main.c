@@ -16,7 +16,7 @@
 void helpme();
 
 const char* sofname = "sp";
-const char* version = "1.1.2";
+const char* version = "1.2.0";
 
 void helpme() {
   printf("０７６ sp - シンプルなパスワードマネージャー\n");
@@ -64,7 +64,19 @@ int main (int argc, char* argv[]) {
     else if (argc == 4 && strcmp(argv[3], "secure") == 0) genpass(atoi(argv[2]), true);
     else helpme();
   }
-  else if (argc == 3 && strcmp(argv[1], "-o") == 0) otppass(argv[2]);
+  else if (argc == 3 && strcmp(argv[1], "-o") == 0) {
+    char fullPath[512];
+    char* homedir = getenv("HOME");
+    if (homedir == NULL) {
+      perror("ホームディレクトリを受取に失敗。");
+      return -1;
+    }
+
+    char* basedir = "/.local/share/sp/";
+    snprintf(fullPath, sizeof(fullPath), "%s%s%s.gpg", homedir, basedir, argv[2]);
+
+    otppass(fullPath);
+  }
   else if (argc == 2 && strcmp(argv[1], "-v") == 0) printf("%s-%s\n", sofname, version);
   else helpme();
 
