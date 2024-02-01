@@ -15,6 +15,23 @@ int delpass(char* file) {
 
   char* basedir = "/.local/share/sp/";
   char* ext = ".gpg";
+
+  int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
+  char* gpgpathchk = malloc(alllen);
+  if (gpgpathchk == NULL) {
+    perror("メモリを割当に失敗。");
+    return -1;
+  }
+
+  // ファイルが既に存在するかどうか確認
+  snprintf(gpgpathchk, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  if (access(gpgpathchk, F_OK) != 0) {
+    fprintf(stderr, "パスワードが存在しません。\n");
+    free(gpgpathchk);
+    return -1;
+  }
+  free(gpgpathchk);
+
   int needed = snprintf(pwfile, sizeof(pwfile), "%s%s%s%s", homedir, basedir, file, ext);
   if (needed >= (int)sizeof(pwfile)) {
     fprintf(stderr, "エラー：パスが長すぎる。\n");
