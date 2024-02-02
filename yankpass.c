@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <gpgme.h>
 
@@ -9,9 +10,12 @@
 #include "showpass.h"
 
 void yankpass(char* file) {
+  char *lang = getenv("SP_LANG");
+
   // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
-  if (getenv("DISPLAY") == NULL) {
-    printf("Xセッションではありませんので、「sp -s」を実行します。\n");
+  if (getenv("DISPLAY") == NULL) { 
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) puts("There is no X session, so executing 'sp -s'.");
+    else puts("Xセッションではありませんので、「sp -s」を実行します。");
     showpass(file);
     return;
   }
@@ -29,7 +33,8 @@ void yankpass(char* file) {
   // GPGMEを創作
   err = gpgme_new(&ctx);
   if (err) {
-    fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
+    else fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
     return;
   }
 
@@ -39,7 +44,8 @@ void yankpass(char* file) {
   // 暗号化したタイルを開く
   char* homedir = getenv("HOME");
   if (homedir == NULL) {
-    perror("ホームディレクトリを受取に失敗。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting home directory");
+    else perror("ホームディレクトリを受取に失敗");
     return;
   }
 
@@ -48,15 +54,21 @@ void yankpass(char* file) {
   int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
   char* gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
-    perror("メモリを割当に失敗。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to allocating memory");
+    else perror("メモリを割当に失敗");
     return;
   }
 
   snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
-    perror("ファイルを開くに失敗。");
-    printf("失敗したパス： %s\n", gpgpath);
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) {
+      perror("Failed to opening the file");
+      fprintf(stderr, "Failed path: %s\n", gpgpath);
+    } else {
+      perror("ファイルを開くに失敗");
+      fprintf(stderr, "失敗したパス： %s\n", gpgpath);
+    }
     free(gpgpath);
     return;
   }
@@ -68,7 +80,8 @@ void yankpass(char* file) {
   // 復号化して
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
-    fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to decryption: %s\n", gpgme_strerror(err));
+    else fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
 
     // 掃除
     fclose(gpgfile);
@@ -89,7 +102,8 @@ void yankpass(char* file) {
     gpgme_data_release(in);
     gpgme_data_release(out);
     gpgme_release(ctx);
-    perror("クリップボードを見つけられませんでした。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Could not found a clipboard");
+    else perror("クリップボードを見つけられませんでした");
     return;
   }
 
@@ -109,7 +123,8 @@ void yankpass(char* file) {
   pclose(pipe);
 
   // 45秒後、クリップボードから削除する
-  printf("パスワードをクリップボードに追加しました。\n45秒後はクリップボードから取り消されます。\n");
+  if (lang != NULL && strncmp(lang, "en", 2) == 0) puts("Added password to the clipboard.\nI will take it away from the clipboard after 45 second");
+  else puts("パスワードをクリップボードに追加しました。\n45秒後はクリップボードから取り消されます");
   sleep(45);
   system("echo -n | xclip -selection clipboard");
 

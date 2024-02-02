@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 #include <gpgme.h>
@@ -7,9 +8,12 @@
 #include "otppass.h"
 
 unsigned char* extract_secret(const char* otpauth_url, size_t* decoded_len) {
+  char *lang = getenv("SP_LANG");
+
   const char* secret_start = strstr(otpauth_url, "secret=");
   if (!secret_start) {
-    fprintf(stderr, "OTPAuth URLの中に、シークレットを見つけられませんでした。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("In the middle of the OTPAuth URL, could not found secret");
+    else perror("OTPAuth URLの中に、シークレットを見つけられませんでした");
     return NULL;
   }
   secret_start += 7;
@@ -24,7 +28,8 @@ unsigned char* extract_secret(const char* otpauth_url, size_t* decoded_len) {
   }
 
   if (secret_end < secret_start) {
-    fprintf(stderr, "不正なシークレットの距離。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Illegal secret range");
+    else perror("不正なシークレットの距離");
     return NULL;
   }
 
@@ -32,7 +37,8 @@ unsigned char* extract_secret(const char* otpauth_url, size_t* decoded_len) {
   char* secret_encoded = (char*)malloc(secret_len + 1);
 
   if (secret_encoded == NULL) {
-    fprintf(stderr, "メモリの役割に失敗。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to allocating memory");
+    else perror("メモリの役割に失敗");
     return NULL;
   }
 
@@ -43,7 +49,8 @@ unsigned char* extract_secret(const char* otpauth_url, size_t* decoded_len) {
   free(secret_encoded);
 
   if (!secret_decoded) {
-    fprintf(stderr, "BASE32の復号化に失敗。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to decrypting of the BASE32");
+    else perror("BASE32の復号化に失敗");
     return NULL;
   }
 
@@ -67,6 +74,8 @@ uint32_t generate_totp(const char *secret, uint64_t counter) {
 }
 
 void otppass(char* file) {
+  char *lang = getenv("SP_LANG");
+
   gpgme_ctx_t ctx;
   gpgme_error_t err;
   gpgme_data_t in, out;
@@ -75,38 +84,44 @@ void otppass(char* file) {
   gpgme_check_version(NULL);
   err = gpgme_new(&ctx);
   if (err) {
-    fprintf(stderr, "GPGMEを創作に失敗\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to generating the GPG");  
+    else perror("GPGMEを創作に失敗"); 
     exit(1);
   }
 
   err = gpgme_data_new_from_file(&in, file, 1);
   if (err) {
-    fprintf(stderr, "GPGファイルを読込に失敗\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to reading the GPG file");
+    else perror("GPGファイルを読込に失敗");
     exit(1);
   }
 
   err = gpgme_data_new(&out);
   if (err) {
-    fprintf(stderr, "GPGデータを読込に失敗\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to reading the GPG data");
+    else perror("GPGデータを読込に失敗");
     exit(1);
   }
 
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
-    fprintf(stderr, "GPGを復号化に失敗\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to decrypting the GPG");
+    else perror("GPGを復号化に失敗");
     exit(1);
   }
 
   char* secret = gpgme_data_release_and_get_mem(out, &secret_len);
   if (!secret) {
-    fprintf(stderr, "GPGを受取に失敗\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting the GPG");
+    else perror("GPGを受取に失敗");
     exit(1);
   }
 
   size_t decoded_len;
   unsigned char* secret_decoded = extract_secret(secret, &decoded_len);
   if (!secret_decoded) {
-    fprintf(stderr, "シークレットの抽出またはデコードに失敗しました\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to decoding or exporting secret");
+    else perror("シークレットの抽出又はデコードに失敗しました");
     free(secret);
     exit(1);
   }

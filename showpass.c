@@ -4,6 +4,7 @@
 #include <locale.h>
 
 #include <gpgme.h>
+#include <string.h>
 
 #include "showpass.h"
 
@@ -16,6 +17,8 @@ void clean_up(gpgme_ctx_t ctx, gpgme_data_t in, gpgme_data_t out, FILE* gpgfile,
 }
 
 void showpass(char* file) {
+  char *lang = getenv("SP_LANG");
+
   gpgme_ctx_t ctx;
   gpgme_error_t err;
   gpgme_data_t in = NULL, out = NULL;
@@ -29,7 +32,8 @@ void showpass(char* file) {
   // GPGMEを創作
   err = gpgme_new(&ctx);
   if (err) {
-    fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
+    else fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
     return;
   }
 
@@ -39,7 +43,8 @@ void showpass(char* file) {
   // 暗号化したタイルを開く
   char* homedir = getenv("HOME");
   if (homedir == NULL) {
-    perror("ホームディレクトリを受取に失敗。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting home directory");
+    else perror("ホームディレクトリを受取に失敗");
     return;
   }
 
@@ -48,29 +53,37 @@ void showpass(char* file) {
   int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
   char* gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
-    perror("メモリを割当に失敗。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to allocating memeory");
+    else perror("メモリを割当に失敗");
     return;
   }
 
   snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
-    perror("ファイルを開くに失敗。");
-    printf("失敗したパス： %s\n", gpgpath);
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) {
+      perror("Failed to opening file");
+      fprintf(stderr, "Failing path: %s\n", gpgpath);
+    } else {
+      perror("ファイルを開くに失敗");
+      fprintf(stderr, "失敗したパス： %s\n", gpgpath);
+    }
     free(gpgpath);
     return;
   }
 
   // ファイルからinデータオブジェクトを創作
   if (gpgme_data_new_from_stream(&in, gpgfile) != GPG_ERR_NO_ERROR) {
-    fprintf(stderr, "GPGMEデータオブジェクトを創作に失敗。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to generating the GPGME data object");
+    else perror("GPGMEデータオブジェクトを創作に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
     return;
   }
 
   // outデータオブジェクトを創作
   if (gpgme_data_new(&out) != GPG_ERR_NO_ERROR) {
-    fprintf(stderr, "GPGMEデータオブジェクトを創作に失敗。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to generating the GPGME data object");
+    else perror("GPGMEデータオブジェクトを創作に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
     return;
   }
@@ -81,7 +94,8 @@ void showpass(char* file) {
   // 復号化して
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
-    fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to decrypting: %s\n", gpgme_strerror(err));
+    else fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
 
     // 掃除
     clean_up(ctx, in, out, gpgfile, gpgpath);

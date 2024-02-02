@@ -8,9 +8,12 @@
 #include "addpass.h"
 
 void initpass(char* gpgid) {
+  char *lang = getenv("SP_LANG");
+
   char* homedir = getenv("HOME");
   if (homedir == NULL) {
-    perror("ホームディレクトリを受取に失敗。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting home directory.");
+    else perror("ホームディレクトリを受取に失敗。");
     return;
   }
 
@@ -19,7 +22,8 @@ void initpass(char* gpgid) {
   snprintf(dirpath, sizeof(dirpath), "%s%s", homedir, basedir);
 
   if (mkdir_r(dirpath, 0755) != 0 && errno != EEXIST) {
-    perror("ディレクトリを作成に失敗。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to creating directory.");
+    else perror("ディレクトリを作成に失敗。");
     return;
   }
 
@@ -28,23 +32,27 @@ void initpass(char* gpgid) {
 
   struct stat statbuf;
   if (stat(gpgidpath, &statbuf) == 0) {
-    fprintf(stderr, ".gpg-idファイルは既に存在します。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror(".gpg-id file is already exist.");
+    else perror(".gpg-idファイルは既に存在します。");
     return;
   }
 
   FILE* gpgidfile = fopen(gpgidpath, "w");
   if (gpgidfile == NULL) {
-    perror(".gpg-idファイルを書き込めません。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to writing .gpg-id file.");
+    else perror(".gpg-idファイルを書き込めません。");
     fclose(gpgidfile);
     return;
   }
 
   if (fputs(gpgid, gpgidfile) == EOF) {
-    fprintf(stderr, ".gpg-idファイルへの書き込みに失敗しました。\n");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to writing .gpg-id file.");
+    else perror(".gpg-idファイルへの書き込みに失敗しました。");
     fclose(gpgidfile);
     return;
   }
 
   fclose(gpgidfile);
-  printf("初期設定に完了しました。");
+  if (lang != NULL && strncmp(lang, "en", 2) == 0) puts("First time setup was complete.");
+  else puts("初期設定に完了しました。");
 }

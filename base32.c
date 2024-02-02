@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "base32.h"
 
 int char_to_val(char c) {

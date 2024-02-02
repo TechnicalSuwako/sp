@@ -5,13 +5,16 @@
 #include "genpass.h"
 
 void genpass(int count, bool issecure) {
+  char *lang = getenv("SP_LANG");
+
   const char* charset_risky = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const char* charset_secure = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()=~-^\\|_@`[{]};:+*<>,./?";
   const char* charset = issecure ? charset_secure : charset_risky;
 
   FILE *fp = fopen("/dev/random", "rb");
   if (fp == NULL) {
-    perror("/dev/randomを開けられませんでした。");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Could not opening /dev/random");
+    else perror("/dev/randomを開けられませんでした");
     exit(EXIT_FAILURE);
   }
 
