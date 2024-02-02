@@ -1,0 +1,49 @@
+.TH sp 1 sp\-VERSION
+.SH ソフト名
+シンプルなパスワードマネージャー Simple Password Manager
+.B sp
+[\fI\,オプション\/\fR] [\fI\,ほげほげ\/\fR]
+.SH 説明
+.PP
+シンプルなパスワードマネージャー Simple Password Manager
+.SH 使い方
+.TP
+\fB\-v\fR
+バージョンを表示
+.TP
+\fB\-h\fR
+ヘルプを表示
+.TP
+\fB\-i <gpg-id>\fR
+GPGと使ってパスワードストレージを初期設定
+.TP
+\fB\-s <パスワード名>\fR
+パスワードを表示
+.TP
+\fB\-y <パスワード名>\fR
+パスワードを表示せずクリップボードにコピーする
+.TP
+\fB\-l\fR
+パスワード一覧を表示
+.TP
+\fB\-a <パスワード名>\fR
+パスワードを追加
+.TP
+\fB\-d <パスワード名>\fR
+パスワードを削除
+.TP
+\fB\-e <パスワード名>\fR
+パスワードを変更
+.TP
+\fB\-g <パスワード名> [risk|secure]\fR
+希望文字数でパスワードをランダムに作成する。risk＝英数字のみ（不安）、secure＝英数字＋特別文字（デフォルト）を使用
+.TP
+\fB\-o <パスワード名>\fR
+ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する
+.SH 言語
+デフォルトの言語は日本語ですが、英語で利用するには、「.zshrc」、「.bashrc」等ファイルで「SP_LANG=en」を追加して下さい。
+.SH バグ報告
+.PP
+バグは下記のURLまでご報告下さい：
+.br
+https://gitler.moe/suwako/sp/issues

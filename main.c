@@ -15,7 +15,7 @@
 #include "otppass.h"
 
 const char* sofname = "sp";
-const char* version = "1.2.0";
+const char* version = "1.3.0";
 
 void helpme() {
   printf("０７６ %s %s - シンプルなパスワードマネージャー\n", sofname, version);
