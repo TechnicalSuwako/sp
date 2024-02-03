@@ -9,6 +9,7 @@
 #include "showpass.h"
 #include "yankpass.h"
 #include "listpass.h"
+/* #include "chkpass.h" */
 #include "addpass.h"
 #include "delpass.h"
 #include "genpass.h"
@@ -25,6 +26,7 @@ void helpme() {
   printf("%s -s <パスワード名>         ：パスワードを表示\n", sofname);
   printf("%s -y <パスワード名>         ：パスワードを表示せずクリップボードにコピーする\n", sofname);
   printf("%s -l                        ：パスワード一覧を表示\n", sofname);
+  printf("%s -c                        ：複数サイトで同じパスワードを利用かどうかの確認\n", sofname);
   printf("%s -a <パスワード名>         ：パスワードを追加\n", sofname);
   printf("%s -d <パスワード名>         ：パスワードを削除\n", sofname);
   printf("%s -e <パスワード名>         ：パスワードを変更\n", sofname);
@@ -43,6 +45,7 @@ void helpme_en() {
   printf("%s -s <Password name>                   : Show password\n", sofname);
   printf("%s -y <Password name>                   : Copy password to clipboard without show\n", sofname);
   printf("%s -l                                   : Show me list of password\n", sofname);
+  printf("%s -c                                   : Check if you use the same password on multiple website\n", sofname);
   printf("%s -a <Password name>                   : Add password\n", sofname);
   printf("%s -d <Password name>                   : Delete password\n", sofname);
   printf("%s -e <Password name>                   : Edit password\n", sofname);
@@ -62,7 +65,7 @@ int main (int argc, char* argv[]) {
   }
 
   if (argc == 3 && strcmp(argv[1], "-i") == 0) initpass(argv[2]);
-  else if (argc == 3 && strcmp(argv[1], "-s") == 0) showpass(argv[2]);
+  else if (argc == 3 && strcmp(argv[1], "-s") == 0) printf("%s", showpass(argv[2]));
   else if (argc == 3 && strcmp(argv[1], "-y") == 0) yankpass(argv[2]);
   else if (argc == 2 && strcmp(argv[1], "-l") == 0) {
     char basePath[512];
@@ -78,6 +81,7 @@ int main (int argc, char* argv[]) {
 
     listpass(basePath, 0);
   }
+  /* else if (argc == 3 && strcmp(argv[1], "-c") == 0) chkpass(); */
   else if (argc == 3 && strcmp(argv[1], "-a") == 0) addpass(argv[2]);
   else if (argc == 3 && strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);
   else if (argc == 3 && strcmp(argv[1], "-e") == 0) {
