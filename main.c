@@ -9,7 +9,7 @@
 #include "showpass.h"
 #include "yankpass.h"
 #include "listpass.h"
-/* #include "chkpass.h" */
+#include "chkpass.h"
 #include "addpass.h"
 #include "delpass.h"
 #include "genpass.h"
@@ -55,7 +55,42 @@ void helpme_en() {
   printf("%s -v                                   : Show version\n", sofname);
 }
 
-int main (int argc, char* argv[]) {
+char* getfullpath(char* arg) {
+  char *lang = getenv("SP_LANG");
+
+  char* homedir = getenv("HOME");
+  if (homedir == NULL) {
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting home directory");
+    else perror("ホームディレクトリを受取に失敗");
+    return NULL;
+  }
+
+  char* basedir = "/.local/share/sp/";
+  size_t fullPathLen;
+  char* fullPath;
+  if (arg != NULL) {
+    fullPathLen = strlen(homedir) + strlen(basedir) + strlen(arg) + 5;
+  } else {
+    fullPathLen = strlen(homedir) + strlen(basedir);
+  }
+
+  fullPath = (char*)malloc(fullPathLen);
+  if (fullPath == NULL) {
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to allocating memory");
+    else perror("メモリの役割に失敗");
+    return NULL;
+  }
+
+  if (arg != NULL) {
+    snprintf(fullPath, fullPathLen, "%s%s%s.gpg", homedir, basedir, arg);
+  } else {
+    snprintf(fullPath, fullPathLen, "%s%s", homedir, basedir);
+  }
+
+  return fullPath;
+}
+
+int main(int argc, char* argv[]) {
   char *lang = getenv("SP_LANG");
 
   if (argc < 2) {
@@ -64,57 +99,58 @@ int main (int argc, char* argv[]) {
     return 0;
   }
 
-  if (argc == 3 && strcmp(argv[1], "-i") == 0) initpass(argv[2]);
-  else if (argc == 3 && strcmp(argv[1], "-s") == 0) printf("%s", showpass(argv[2]));
-  else if (argc == 3 && strcmp(argv[1], "-y") == 0) yankpass(argv[2]);
-  else if (argc == 2 && strcmp(argv[1], "-l") == 0) {
-    char basePath[512];
-    char* homedir = getenv("HOME");
-    if (homedir == NULL) {
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting home directory");
-      else perror("ホームディレクトリを受取に失敗");
-      return -1;
+  if (argc == 3) {
+    if      (strcmp(argv[1], "-i") == 0) initpass(argv[2]);
+    else if (strcmp(argv[1], "-s") == 0) printf("%s", showpass(argv[2]));
+    else if (strcmp(argv[1], "-y") == 0) yankpass(argv[2]);
+    else if (strcmp(argv[1], "-a") == 0) addpass(argv[2]);
+    else if (strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);
+    else if (strcmp(argv[1], "-e") == 0) {
+      delpass(argv[2], 1);
+      addpass(argv[2]);
     }
+    else if (strcmp(argv[1], "-o") == 0) {
+      char* fullPath = getfullpath(argv[2]);
+      if (fullPath == NULL) return -1;
 
-    char* basedir = "/.local/share/sp/";
-    snprintf(basePath, sizeof(basePath), "%s%s", homedir, basedir);
+      otppass(fullPath);
+      free(fullPath);
+    } else {
+      if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
+      else helpme();
+      return 1;
+    }
+  } else if (argc == 2) {
+    char* basePath = getfullpath(NULL);
+    if (basePath == NULL) return -1;
 
-    listpass(basePath, 0);
-  }
-  /* else if (argc == 3 && strcmp(argv[1], "-c") == 0) chkpass(); */
-  else if (argc == 3 && strcmp(argv[1], "-a") == 0) addpass(argv[2]);
-  else if (argc == 3 && strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);
-  else if (argc == 3 && strcmp(argv[1], "-e") == 0) {
-    delpass(argv[2], 1);
-    addpass(argv[2]);
-  }
-  else if (strcmp(argv[1], "-g") == 0) {
-    if (argc == 3) genpass(atoi(argv[2]), true);
-    else if (argc == 4 && strcmp(argv[3], "risk") == 0) genpass(atoi(argv[2]), false);
-    else if (argc == 4 && strcmp(argv[3], "secure") == 0) genpass(atoi(argv[2]), true);
+    if      (strcmp(argv[1], "-l") == 0) listpass(basePath, 0);
+    else if (strcmp(argv[1], "-c") == 0) chkpass(basePath);
+    else if (strcmp(argv[1], "-v") == 0) printf("%s-%s\n", sofname, version);
     else {
       if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
       else helpme();
+      free(basePath);
+      return 1;
     }
-  }
-  else if (argc == 3 && strcmp(argv[1], "-o") == 0) {
-    char fullPath[512];
-    char* homedir = getenv("HOME");
-    if (homedir == NULL) {
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to getting home directory");
-      else perror("ホームディレクトリを受取に失敗");
-      return -1;
+    free(basePath);
+  } else if (strcmp(argv[1], "-g") == 0) {
+    if (argc != 3 && argc != 4) {
+      if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
+      else helpme();
+      return 1;
     }
 
-    char* basedir = "/.local/share/sp/";
-    snprintf(fullPath, sizeof(fullPath), "%s%s%s.gpg", homedir, basedir, argv[2]);
-
-    otppass(fullPath);
-  }
-  else if (argc == 2 && strcmp(argv[1], "-v") == 0) printf("%s-%s\n", sofname, version);
-  else {
+    if      (argc == 3) genpass(atoi(argv[2]), true);
+    else if (argc == 4 && strcmp(argv[3], "risk") == 0) genpass(atoi(argv[2]), false);
+    else if (argc == 4 && strcmp(argv[3], "secure") == 0) genpass(atoi(argv[2]), true);
+  } else if (strcmp(argv[1], "-h") == 0) {
     if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
     else helpme();
+  } else {
+    if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
+    else helpme();
+    return 1;
   }
 
   return 0;

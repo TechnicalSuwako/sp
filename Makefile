@@ -15,7 +15,7 @@ ifeq ($(UNAME_S),NetBSD)
 	PREFIX=/usr/pkg
 endif
 CC=cc
-FILES=main.c showpass.c yankpass.c addpass.c delpass.c listpass.c genpass.c initpass.c otppass.c base32.c
+FILES=main.c showpass.c yankpass.c addpass.c delpass.c listpass.c genpass.c initpass.c otppass.c base32.c chkpass.c
 CFLAGS=-Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
 LDFLAGS=-lgpgme -lcrypto
 
