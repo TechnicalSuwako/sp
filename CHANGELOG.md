@@ -1,5 +1,7 @@
 # 1.3.0
 * 英訳の追加
+* GNU Make → BSD Make
+* GPLv2 → ISC
 
 # 1.2.0
 * やっとTOTP機能性を修正した
