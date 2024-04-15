@@ -2,6 +2,7 @@
 * 英訳の追加
 * GNU Make → BSD Make
 * GPLv2 → ISC
+* OpenBSD向けのリリースコマンドの追加
 
 # 1.2.0
 * やっとTOTP機能性を修正した
