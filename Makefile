@@ -33,6 +33,10 @@ dist: clean
 	tar zcfv ${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	rm -rf ${NAME}-${VERSION}
 
+release-openbsd:
+	${CC} ${CFLAGS} -o ${NAME}-${VERSION}-openbsd-amd64 ${FILES} -static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lintl -liconv
+	strip ${NAME}
+
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
