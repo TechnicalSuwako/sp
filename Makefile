@@ -33,6 +33,7 @@ clean:
 	rm -f ${NAME}
 
 dist: clean
+	mkdir -p dist
 	mkdir -p ${NAME}-${VERSION}
 	cp -R LICENSE.txt Makefile README.md CHANGELOG.md \
 		${NAME}-completion.zsh ${NAME}.1 main.c src ${NAME}-${VERSION}
@@ -40,16 +41,19 @@ dist: clean
 	rm -rf ${NAME}-${VERSION}
 
 release-openbsd:
+	mkdir -p release
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-openbsd-amd64 ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lintl -liconv
 	strip release/${NAME}-${VERSION}-openbsd-amd64
 
 release-freebsd:
+	mkdir -p release
 	${CC} ${CFLAGS} -o release/${NAME}-${version}-freebsd-amd64 ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
 	strip release/${NAME}-${VERSION}-linux-amd64
 
 release-linux:
+	mkdir -p release
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-linux-amd64 ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error
 	strip release/${NAME}-${VERSION}-linux-amd64
