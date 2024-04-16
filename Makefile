@@ -20,8 +20,7 @@ CC=cc
 FILES=main.c src/*.c
 CFLAGS=-Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
 .if ${UNAME_S} == "NetBSD"
-CFLAGS=-Wall -Wextra -O3 -I/usr/pkg/include -L/usr/pkg/lib \
-			 -I/usr/local/include -L/usr/local/include
+CFLAGS+=-I/usr/local/include -L/usr/local/lib -I/usr/include -L/usr/lib
 .endif
 LDFLAGS=-lgpgme -lcrypto
 
@@ -51,6 +50,12 @@ release-freebsd:
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-freebsd-amd64 ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
 	strip release/${NAME}-${VERSION}-freebsd-amd64
+
+release-netbsd:
+	mkdir -p release
+	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-netbsd-amd64 ${FILES} \
+		-static -lgpgme -lcrypto -lcrypt -lc -lassuan -lgpg-error -lintl
+	strip release/${NAME}-${VERSION}-netbsd-amd64
 
 release-linux:
 	mkdir -p release
