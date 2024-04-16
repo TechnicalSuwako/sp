@@ -41,6 +41,10 @@ release-freebsd:
 	${CC} ${CFLAGS} -o ${NAME}-${VERSION}-freebsd-amd64 ${FILES} -static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
 	strip ${NAME}
 
+release-linux:
+	${CC} ${CFLAGS} -o ${NAME}-${VERSION}-linux-amd64 ${FILES} -static -lgpgme -lcrypto -lc -lassuan -lgpg-error
+	strip ${NAME}
+
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
