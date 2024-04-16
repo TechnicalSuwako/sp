@@ -45,9 +45,9 @@ release-openbsd:
 	strip release/${NAME}-${VERSION}-openbsd-amd64
 
 release-freebsd:
-	${CC} ${CFLAGS} -o release/${NAME}-${version}-freebsd-amd64 ${FILES} \
+	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-freebsd-amd64 ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
-	strip release/${NAME}-${VERSION}-linux-amd64
+	strip release/${NAME}-${VERSION}-freebsd-amd64
 
 release-linux:
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-linux-amd64 ${FILES} \
