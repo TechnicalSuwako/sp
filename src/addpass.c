@@ -31,9 +31,11 @@ int mkdir_r(const char *path, mode_t mode) {
 
   for (p = tmp + 1; *p; p++) {
     if (*p == '/') {
-      *p = 0; // 最後の「/」文字を取り消す
+      // 最後の「/」文字を取り消す
+      *p = 0;
       if (mkdir(tmp, mode) != 0 && errno != EEXIST) return -1;
-      *p = '/'; // また追加
+      // また追加
+      *p = '/';
     }
   }
 
@@ -79,7 +81,8 @@ void addpass(char* file) {
   // パスを準備
   char* homedir = getenv("HOME");
   if (homedir == NULL) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to retrieving home directory");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Failed to retrieving home directory");
     else perror("ホームディレクトリを受取に失敗");
     return;
   }
@@ -93,7 +96,8 @@ void addpass(char* file) {
   int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
   char* gpgpathchk = malloc(alllen);
   if (gpgpathchk == NULL) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to allocating memory");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Failed to allocating memory");
     else perror("メモリを割当に失敗");
     return;
   }
@@ -101,24 +105,38 @@ void addpass(char* file) {
   // ファイルが既に存在するかどうか確認
   snprintf(gpgpathchk, alllen, "%s%s%s%s", homedir, basedir, file, ext);
   if (access(gpgpathchk, F_OK) != -1) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)  fprintf(stderr, "Password already exist.\nFor edit, please run ' sp -e %s '.\n", file);
-    else fprintf(stderr, "パスワードが既に存在しています。\n変更するには、「 sp -e %s 」を実行して下さい。\n", file);
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      fprintf(
+        stderr,
+        "Password already exist.\nFor edit, please run ' sp -e %s '.\n",
+        file
+      );
+    else
+      fprintf(
+        stderr,
+        "%s\n変更するには、「 sp -e %s 」を実行して下さい。\n",
+        "パスワードが既に存在しています。",
+        file
+      );
     free(gpgpathchk);
     return;
   }
   free(gpgpathchk);
 
   // パスワードを受け取る
-  if (lang != NULL && strncmp(lang, "en", 2) == 0) getpasswd("Password: ", pass, sizeof(pass));
+  if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    getpasswd("Password: ", pass, sizeof(pass));
   else getpasswd("パスワード： ", pass, sizeof(pass));
   puts("");
-  if (lang != NULL && strncmp(lang, "en", 2) == 0) getpasswd("Password (for verification): ", knin, sizeof(knin));
+  if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    getpasswd("Password (for verification): ", knin, sizeof(knin));
   else getpasswd("パスワード（確認用）： ", knin, sizeof(knin));
   puts("");
 
   // パスワードが一致するかどうか確認
   if (strcmp(pass, knin) != 0) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Password does not match. Ending...");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Password does not match. Ending...");
     else perror("パスワードが一致していません。終了…");
     return;
   }
@@ -138,7 +156,8 @@ void addpass(char* file) {
   // GPGMEを創作
   err = gpgme_new(&ctx);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
     return;
   }
@@ -146,7 +165,8 @@ void addpass(char* file) {
   // GPGMEは非対話的モードに設定
   err = gpgme_set_pinentry_mode(ctx, GPGME_PINENTRY_MODE_LOOPBACK);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to setting pinentry mode: %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      fprintf(stderr, "Failed to setting pinentry mode: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "pinentryモードを設定に失敗： %s\n", gpgme_strerror(err));
     gpgme_release(ctx);
     return;
@@ -155,8 +175,10 @@ void addpass(char* file) {
   // パスワードからデータオブジェクトを創作
   err = gpgme_data_new_from_mem(&in, pass, strlen(pass), 0);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to making data object: %s\n", gpgme_strerror(err));
-    else fprintf(stderr, "データオブジェクトを創作に失敗： %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      fprintf(stderr, "Failed to making data object: %s\n", gpgme_strerror(err));
+    else
+      fprintf(stderr, "データオブジェクトを創作に失敗： %s\n", gpgme_strerror(err));
     gpgme_release(ctx);
     return;
   }
@@ -182,7 +204,8 @@ void addpass(char* file) {
 
   char* keyid = malloc(256);
   if (!fgets(keyid, 256, keyfile)) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)  perror("Failed to reading key ID");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Failed to reading key ID");
     else perror("鍵IDを読込に失敗");
     fclose(keyfile);
     free(keyid);
@@ -194,7 +217,8 @@ void addpass(char* file) {
 
   err = gpgme_get_key(ctx, keyid, &key[0], 0);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to getting key: %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      fprintf(stderr, "Failed to getting key: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "鍵を受取に失敗： %s\n", gpgme_strerror(err));
     free(keyid);
     return;
@@ -212,7 +236,8 @@ void addpass(char* file) {
   // 暗号化
   err = gpgme_op_encrypt(ctx, &key[0], GPGME_ENCRYPT_ALWAYS_TRUST, in, out);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) fprintf(stderr, "Failed to encrypt: %s\n", gpgme_strerror(err));
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      fprintf(stderr, "Failed to encrypt: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "暗号化に失敗： %s\n", gpgme_strerror(err));
     cleanup(ctx, key[0], in, out);
     return;
@@ -222,7 +247,8 @@ void addpass(char* file) {
   char* gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
     cleanup(ctx, key[0], in, out);
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to allocating memory");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Failed to allocating memory");
     else perror("メモリを割当に失敗");
     return;
   }
@@ -238,7 +264,8 @@ void addpass(char* file) {
     if (mkdir_r(dirpath, 0755) != 0) {
       free(gpgpath);
       cleanup(ctx, key[0], in, out);
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to constructing directory");
+      if (lang != NULL && strncmp(lang, "en", 2) == 0)
+        perror("Failed to constructing directory");
       else perror("ディレクトリを創作に失敗");
       return;
     }
@@ -249,7 +276,8 @@ void addpass(char* file) {
   if (stat(gpgpath, &statbuf) == 0) {
     free(gpgpath);
     cleanup(ctx, key[0], in, out);
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Password is already exist");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Password is already exist");
     else perror("パスワードは既に存在しています");
     return;
   }
@@ -271,7 +299,8 @@ void addpass(char* file) {
   // データが保存したかどうか確認
   ssize_t encrypted_data_size = gpgme_data_seek(out, 0, SEEK_END);
   if (encrypted_data_size <= 0) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to saving the data");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Failed to saving the data");
     else perror("データを保存に失敗");
     fclose(gpgfile);
     free(gpgpath);
@@ -287,7 +316,8 @@ void addpass(char* file) {
 
   while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer))) > 0) {
     if (fwrite(buffer, 1, (size_t)read_bytes, gpgfile) != (size_t)read_bytes) {
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to writing password");
+      if (lang != NULL && strncmp(lang, "en", 2) == 0) 
+        perror("Failed to writing password");
       else perror("パスワードを書き込みに失敗");
       free(gpgpath);
       cleanup(ctx, key[0], in, out);
@@ -300,6 +330,7 @@ void addpass(char* file) {
   free(gpgpath);
   cleanup(ctx, key[0], in, out);
 
-  if (lang != NULL && strncmp(lang, "en", 2) == 0) puts("I could save the password");
+  if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    puts("I could save the password");
   else puts("パスワードを保存出来ました");
 }

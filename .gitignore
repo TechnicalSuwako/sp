@@ -1,5 +1,6 @@
 sp
-sp-*
+dist
+release
 .ccls-cache
 *.o
 *.tar.gz

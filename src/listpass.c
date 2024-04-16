@@ -12,7 +12,8 @@ void listpass(char* basePath, int level) {
   struct dirent* entry;
   DIR* dir = opendir(basePath);
   if (!dir) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Could not opening directory");
+    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+      perror("Could not opening directory");
     else perror("ディレクトリを開けられません");
     return;
   }
@@ -25,14 +26,16 @@ void listpass(char* basePath, int level) {
     char path[1000];
     int needed = snprintf(path, sizeof(path), "%s/%s", basePath, entry->d_name);
     if (needed >= (int)sizeof(path) || needed < 0) {
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Error: Path is too long, or failed to getting lenth");
+      if (lang != NULL && strncmp(lang, "en", 2) == 0)
+        perror("Error: Path is too long, or failed to getting lenth");
       else perror("エラー：パスが長すぎる、又は長さを受取に失敗");
       continue;
     }
 
     struct stat statbuf;
     if (stat(path, &statbuf) == -1) {
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) perror("Failed to reading file status");
+      if (lang != NULL && strncmp(lang, "en", 2) == 0)
+        perror("Failed to reading file status");
       else perror("ファイル状況を読込に失敗");
       continue;
     }

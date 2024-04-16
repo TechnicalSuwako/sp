@@ -89,8 +89,10 @@ $ sp -d 076.moe/suwako
 
 ## TOTP（ワンタイムパスワード）
 ### QRコードから
-QRコードをダウンロードし、zbarimgを使用して「QR-Code:」以降の部分をコピーし、spに追加して下さい。\
-`sp -a`を実行すると、「パスワード」を聞かれますが、TOTPの場合は「otpauth://」から始まる文字列をコピペして下さい。
+QRコードをダウンロードし、zbarimgを使用して「QR-Code:」以降の部分をコピーし、
+spに追加して下さい。\
+`sp -a`を実行すると、「パスワード」を聞かれますが、
+TOTPの場合は「otpauth://」から始まる文字列をコピペして下さい。
 ```sh
 $ zbarimg -q gitler.png
 QR-Code:otpauth://totp/Gitler%20%28gitler.moe%29:suwako?algorithm=SHA1&digits=6&issuer=Gitler%20%28gitler.moe%29&period=30&secret=〇〇
