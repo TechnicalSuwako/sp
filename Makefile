@@ -1,4 +1,5 @@
 UNAME_S!=uname -s
+UNAME_M!=uname -m
 
 NAME!=cat main.c | grep "const char\* sofname" | awk '{print $$5}' | \
 	sed "s/\"//g" | sed "s/;//"
@@ -41,27 +42,27 @@ dist: clean
 
 release-openbsd:
 	mkdir -p release
-	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-openbsd-amd64 ${FILES} \
+	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-openbsd-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lintl -liconv
-	strip release/${NAME}-${VERSION}-openbsd-amd64
+	strip release/${NAME}-${VERSION}-openbsd-${UNAME_M}
 
 release-freebsd:
 	mkdir -p release
-	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-freebsd-amd64 ${FILES} \
+	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-freebsd-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
-	strip release/${NAME}-${VERSION}-freebsd-amd64
+	strip release/${NAME}-${VERSION}-freebsd-${UNAME_M}
 
 release-netbsd:
 	mkdir -p release
-	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-netbsd-amd64 ${FILES} \
+	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-netbsd-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lcrypt -lc -lassuan -lgpg-error -lintl
-	strip release/${NAME}-${VERSION}-netbsd-amd64
+	strip release/${NAME}-${VERSION}-netbsd-${UNAME_M}
 
 release-linux:
 	mkdir -p release
-	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-linux-amd64 ${FILES} \
+	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-linux-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error
-	strip release/${NAME}-${VERSION}-linux-amd64
+	strip release/${NAME}-${VERSION}-linux-${UNAME_M}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
