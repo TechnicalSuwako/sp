@@ -1,29 +1,31 @@
-UNAME_S!=uname -s
-UNAME_M!=uname -m
+UNAME_S != uname -s
+UNAME_M != uname -m
 
-NAME!=cat main.c | grep "const char\* sofname" | awk '{print $$5}' | \
+NAME != cat main.c | grep "const char \*sofname" | awk '{print $$5}' | \
 	sed "s/\"//g" | sed "s/;//"
-VERSION!=cat main.c | grep "const char\* version" | awk '{print $$5}' | \
+VERSION != cat main.c | grep "const char \*version" | awk '{print $$5}' | \
 	sed "s/\"//g" | sed "s/;//"
-PREFIX=/usr/local
+PREFIX = /usr/local
+
+MANPREFIX = ${PREFIX}/man
 
 .if ${UNAME_S} == "FreeBSD"
-MANPREFIX=${PREFIX}/share/man
+MANPREFIX = ${PREFIX}/share/man
 .elif ${UNAME_S} == "Linux"
-PREFIX=/usr
-MANPREFIX=${PREFIX}/share/man
+PREFIX = /usr
+MANPREFIX = ${PREFIX}/share/man
 .elif ${UNAME_S} == "NetBSD"
-PREFIX=/usr/pkg
-MANPREFIX=${PREFIX}/share/man
+PREFIX = /usr/pkg
+MANPREFIX = ${PREFIX}/share/man
 .endif
 
-CC=cc
-FILES=main.c src/*.c
-CFLAGS=-Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
+CC = cc
+FILES = main.c src/*.c
+CFLAGS = -Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
 .if ${UNAME_S} == "NetBSD"
-CFLAGS+=-I/usr/local/include -L/usr/local/lib -I/usr/include -L/usr/lib
+CFLAGS += -I/usr/local/include -L/usr/local/lib -I/usr/include -L/usr/lib
 .endif
-LDFLAGS=-lgpgme -lcrypto
+LDFLAGS = -lgpgme -lcrypto
 
 all:
 	${CC} ${CFLAGS} -o ${NAME} ${FILES} ${LDFLAGS}

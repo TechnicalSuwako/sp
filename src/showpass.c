@@ -1,19 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include <locale.h>
 
-#include <gpgme.h>
-#include <string.h>
-
+#include "common.h"
 #include "showpass.h"
 
 void clean_up(
   gpgme_ctx_t ctx,
   gpgme_data_t in,
   gpgme_data_t out,
-  FILE* gpgfile,
-  char* gpgpath
+  FILE *gpgfile,
+  char *gpgpath
 ) {
   if (gpgfile) fclose(gpgfile);
   if (gpgpath) free(gpgpath);
@@ -22,8 +17,8 @@ void clean_up(
   gpgme_release(ctx);
 }
 
-void showpass(char* file) {
-  char *lang = getenv("SP_LANG");
+const char *showpass(char *file) {
+  char *lang = getlang();
 
   gpgme_ctx_t ctx;
   gpgme_error_t err;
@@ -38,39 +33,40 @@ void showpass(char* file) {
   // GPGMEを創作
   err = gpgme_new(&ctx);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    if (strncmp(lang, "en", 2) == 0)
       fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
-    return;
+    return NULL;
   }
 
   // OpenPGPプロトコールを設定
   gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
 
   // 暗号化したタイルを開く
-  char* homedir = getenv("HOME");
+  char *homedir = getenv("HOME");
   if (homedir == NULL) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    if (strncmp(lang, "en", 2) == 0)
       perror("Failed to getting home directory");
     else perror("ホームディレクトリを受取に失敗");
-    return;
+    return NULL;
   }
 
-  char* basedir = "/.local/share/sp/";
-  char* ext = ".gpg";
+  char *basedir = "/.local/share/sp/";
+  char *ext = ".gpg";
   int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
-  char* gpgpath = malloc(alllen);
+  char *gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    if (strncmp(lang, "en", 2) == 0)
       perror("Failed to allocating memeory");
     else perror("メモリを割当に失敗");
-    return;
+    return NULL;
   }
 
   snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) {
+    if (strncmp(lang, "en", 2) == 0) {
       perror("Failed to opening file");
       fprintf(stderr, "Failing path: %s\n", gpgpath);
     } else {
@@ -78,25 +74,25 @@ void showpass(char* file) {
       fprintf(stderr, "失敗したパス： %s\n", gpgpath);
     }
     free(gpgpath);
-    return;
+    return NULL;
   }
 
   // ファイルからinデータオブジェクトを創作
   if (gpgme_data_new_from_stream(&in, gpgfile) != GPG_ERR_NO_ERROR) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    if (strncmp(lang, "en", 2) == 0)
       perror("Failed to generating the GPGME data object");
     else perror("GPGMEデータオブジェクトを創作に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
-    return;
+    return NULL;
   }
 
   // outデータオブジェクトを創作
   if (gpgme_data_new(&out) != GPG_ERR_NO_ERROR) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    if (strncmp(lang, "en", 2) == 0)
       perror("Failed to generating the GPGME data object");
     else perror("GPGMEデータオブジェクトを創作に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
-    return;
+    return NULL;
   }
 
   // データオブジェクトを創作
@@ -105,32 +101,39 @@ void showpass(char* file) {
   // 復号化して
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0)
+    if (strncmp(lang, "en", 2) == 0)
       fprintf(stderr, "Failed to decrypting: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
 
     // 掃除
     clean_up(ctx, in, out, gpgfile, gpgpath);
-    return;
+    return NULL;
   }
 
   // 復号化したパスワードを表示する
   gpgme_data_seek(out, 0, SEEK_SET);
   char buffer[512];
+  char *res = malloc(512 * sizeof(char));
+  if (res == NULL) {
+    if (strncmp(lang, "en", 2) == 0)
+      perror("Failed to allocating memory");
+    else perror("メモリを役割に失敗");
+    clean_up(ctx, in, out, gpgfile, gpgpath);
+    return NULL;
+  }
+
   ssize_t read_bytes;
-  bool islastnl = false;
+  int i = 0;
 
   while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer) - 1)) > 0) {
-    fwrite(buffer, 1, read_bytes, stdout);
-    if (buffer[read_bytes - 1] == '\n') {
-      islastnl = true;
-    }
+    memcpy(res + i, buffer, read_bytes);
+    i += read_bytes;
   }
 
-  if (!islastnl) {
-    putchar('\n');
-  }
+  res[i] = '\0';
+  if (res[i-1] == '\n') res[i-1] = '\0';
 
   // 掃除
   clean_up(ctx, in, out, gpgfile, gpgpath);
+  return res;
 }

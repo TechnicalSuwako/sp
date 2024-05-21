@@ -1,9 +1,13 @@
 #ifndef ADDPASS_H
 #define ADDPASS_H
 
-#include <sys/stat.h>
+#include <locale.h>
+#include <unistd.h>
 
-int mkdir_r(const char *path, mode_t mode);
-void addpass(char* file);
+#include <termios.h>
+
+#include "common.h"
+
+void addpass(char *file);
 
 #endif
