@@ -84,8 +84,7 @@ int main(int argc, char *argv[]) {
     else if (strcmp(argv[1], "-e") == 0) {
       delpass(argv[2], 1);
       addpass(argv[2]);
-    }
-    else if (strcmp(argv[1], "-o") == 0) {
+    } else if (strcmp(argv[1], "-o") == 0) {
       char *fullPath = getfullpath(argv[2]);
       if (fullPath == NULL) return -1;
       otppass(fullPath);
