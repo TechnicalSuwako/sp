@@ -11,85 +11,8 @@
 const char *sofname = "sp";
 const char *version = "1.3.0";
 
-void helpme() {
-  printf("０７６ %s %s - シンプルなパスワードマネージャー\n", sofname, version);
-  printf("https://076.moe/ | https://gitler.moe/suwako/%s\n\n", sofname);
-  puts  ("使い方：");
-  printf(
-    "%s -i <gpg-id>               ：GPGと使ってパスワードストレージを初期設定\n",
-    sofname
-  );
-  printf("%s -s <パスワード名>         ：パスワードを表示\n", sofname);
-  printf(
-    "%s %s%s\n",
-    sofname,
-    "-y <パスワード名>         ：",
-    "パスワードを表示せずクリップボードにコピーする"
-  );
-  printf("%s -l                        ：パスワード一覧を表示\n", sofname);
-  printf("%s -a <パスワード名>         ：パスワードを追加\n", sofname);
-  printf("%s -d <パスワード名>         ：パスワードを削除\n", sofname);
-  printf("%s -e <パスワード名>         ：パスワードを変更\n", sofname);
-  printf(
-    "%s %s%s%s\n",
-    sofname,
-    "-g <文字数> [risk|secure] ：",
-    "希望文字数でパスワードをランダムに作成する。",
-    "risk＝英数字のみ（不安）、secure＝英数字＋特別文字（デフォルト）を使用"
-  );
-  printf(
-    "%s %s%s\n",
-    sofname,
-    "-o <パスワード名>         ：",
-    "ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する"
-  );
-  printf("%s -h                        ：ヘルプを表示\n", sofname);
-  printf("%s -v                        ：バージョンを表示\n", sofname);
-}
-
-void helpme_en() {
-  printf("076 %s %s - Simple Password Manager\n", sofname, version);
-  printf("https://076.moe/ | https://gitler.moe/suwako/%s\n", sofname);
-  puts  ("When reporting issues, please report in Japanese.\n");
-  puts  ("Usage:");
-  printf(
-    "%s %s%s\n",
-    sofname,
-    "-i <gpg-id>                          : ",
-    "First setting for using GPG and password storage"
-  );
-  printf(
-    "%s -s <Password name>                   : Show password\n", sofname
-  );
-  printf(
-    "%s %s%s\n",
-    sofname,
-    "-y <Password name>                   : ",
-    "Copy password to clipboard without show"
-  );
-  printf(
-    "%s %s\n",
-    sofname,
-    "-l                                   : Show me list of password"
-  );
-  printf("%s -a <Password name>                   : Add password\n", sofname);
-  printf("%s -d <Password name>                   : Delete password\n", sofname);
-  printf("%s -e <Password name>                   : Edit password\n", sofname);
-  printf("%s %s%s%s%s\n",
-    sofname,
-    "-g <Characters amount> [risk|secure] : ",
-    "Randomly make password with hoped amount.",
-    "Using risk = only english letter and number (abnoxious),",
-    "secure = english letter and digit + special character (default)"
-  );
-  printf(
-    "%s %s%s\n",
-    sofname,
-    "-o <Password name>                   : ",
-    "Show one time password. If not exist, construct"
-  );
-  printf("%s -h                                   : Show help\n", sofname);
-  printf("%s -v                                   : Show version\n", sofname);
+void usage() {
+  printf("usage: %s-%s [-adegilosvy]\n", sofname, version);
 }
 
 char *getfullpath(char *arg) {
@@ -117,8 +40,8 @@ char *getfullpath(char *arg) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to allocating memory");
     else perror("メモリの役割に失敗");
-    if (fullPath) free(fullPath);
-    if (homedir) free(homedir);
+    free(fullPath);
+    free(homedir);
     return NULL;
   }
 
@@ -132,18 +55,14 @@ char *getfullpath(char *arg) {
 }
 
 int main(int argc, char *argv[]) {
-  char *lang = getlang();
-
   if (argc < 2) {
-    if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
-    else helpme();
+    usage();
     return 0;
   }
 
   if (strcmp(argv[1], "-g") == 0) {
     if (argc != 3 && argc != 4) {
-      if (strncmp(lang, "en", 2) == 0) helpme_en();
-      else helpme();
+      usage();
       return 1;
     }
 
@@ -170,10 +89,9 @@ int main(int argc, char *argv[]) {
       char *fullPath = getfullpath(argv[2]);
       if (fullPath == NULL) return -1;
       otppass(fullPath);
-      if (fullPath) free(fullPath);
+      free(fullPath);
     } else {
-      if (lang != NULL && strncmp(lang, "en", 2) == 0) helpme_en();
-      else helpme();
+      usage();
       return 1;
     }
   } else if (argc == 2) {
@@ -183,15 +101,13 @@ int main(int argc, char *argv[]) {
     if      (strcmp(argv[1], "-l") == 0) listpass(basePath, 0);
     else if (strcmp(argv[1], "-v") == 0) printf("%s-%s\n", sofname, version);
     else {
-      if (strncmp(lang, "en", 2) == 0) helpme_en();
-      else helpme();
-      if (basePath) free(basePath);
+      usage();
+      free(basePath);
       return 1;
     }
-    if (basePath) free(basePath);
+    free(basePath);
   } else {
-     if (strncmp(lang, "en", 2) == 0) helpme_en();
-     else helpme();
+     usage();
      return 1;
   }
 
