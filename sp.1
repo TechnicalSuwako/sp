@@ -1,70 +1,172 @@
-.TH sp 1 sp\-VERSION
-.SH ソフト名
-シンプルなパスワードマネージャー Simple Password Manager
+.TH SP 1 VERSION
+.SH NAME
+sp - Simple Password Manager
 .br
 .B sp
-[\fI\,オプション\/\fR] [\fI\,ほげほげ\/\fR]
+[-i] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-g \fI\,length\fR [\fI\,secure\fR|\fI\,risk\fR]]
 .SH 説明
 .PP
-シンプルなパスワードマネージャー Simple Password Manager
-.SH 使い方
+シンプルなパスワードマネージャー。
 .TP
-\fB\-v\fR
-バージョンを表示
-.TP
-\fB\-h\fR
-ヘルプを表示
-.TP
-\fB\-i <gpg-id>\fR
-GPGと使ってパスワードストレージを初期設定
-.TP
-\fB\-s <パスワード名>\fR
-パスワードを表示
-.TP
-\fB\-y <パスワード名>\fR
-パスワードを表示せずクリップボードにコピーする
-.TP
-\fB\-l\fR
-パスワード一覧を表示
-.TP
-\fB\-a <パスワード名>\fR
+\fB\,a\fR \fI\,password\fR
 パスワードを追加
 .TP
-\fB\-d <パスワード名>\fR
+\fB\,d\fR \fI\,password\fR
 パスワードを削除
 .TP
-\fB\-e <パスワード名>\fR
+\fB\,e\fR \fI\,password\fR
 パスワードを変更
 .TP
-\fB\-g <パスワード名> [risk|secure]\fR
+\fB\,g\fR \fI,length\fR \fI,risk|secure\fR
 希望文字数でパスワードをランダムに作成する。
 .br
-risk＝英数字のみ（不安）、
+デフォルトな長さは64文字です。
 .br
 secure＝英数字＋特別文字（デフォルト）を使用
+.br
+risk＝英数字のみ（不安）を使用
 .TP
-\fB\-o <パスワード名>\fR
+\fB\,i\fR \fI\,gpg-id\fR
+GPGと使ってパスワードストレージを初期設定
+.TP
+\fB\,l\fR
+パスワード一覧を表示
+.TP
+\fB\,o\fR \fI\,password\fR
 ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する
-.SH 言語
+.TP
+\fB\,s\fR \fI\,password\fR
+パスワードを表示
+.TP
+\fB\,v\fR
+バージョンを表示
+.TP
+\fB\,y\fR \fI\,password\fR
+パスワードを表示せずクリップボードにコピーする
+.SH LANGUAGE
 デフォルトの言語は日本語ですが、英語で利用するには、
 .br
 「.zshrc」、「.bashrc」等ファイルで「SP_LANG=en」を追加して下さい。
-.SH バグ報告
+.SH EXAMPLES
+\&...
+
+$ sp -i 12345678901234567890ABCDEFABCDEF1234ABCD
+.br
+初期設定に完了しました。
+
+$ cat ~/.local/share/sp/.gpg-id
+.br
+12345678901234567890ABCDEFABCDEF1234ABCD
+.ED
+
+\&...
+
+$ sp -a 076.moe/nitori
+.br
+パスワード：
+.br
+パスワード（確認用）：
+.br
+パスワードを保存出来ました
+
+$ sp -s 076.moe/nitori
+.br
+kyuuri
+
+$ sp -d 076.moe/nitori
+.br
+パスワード「076.moe/nitori」を本当に削除する事が宜しいでしょうか？ (y/N): y
+.br
+パスワードを削除しました
+.br
+
+$ sp -s 076.moe/nitori
+.br
+ファイルを開くに失敗: No such file or directory
+.ED
+
+\&...
+
+$ sp -a 076.moe/nitori
+.br
+パスワード：
+.br
+パスワード（確認用）：
+.br
+パスワードを保存出来ました
+
+$ sp -s 076.moe/nitori
+.br
+kyuuri
+
+$ sp -a 076.moe/nitori
+.br
+パスワードが既に存在しています。
+.br
+変更するには、「 sp -e 076.moe/nitori 」を実行して下さい。
+
+$ SP_LANG=en sp -a 076.moe/nitori
+.br
+Password already exist.
+.br
+For edit, please run ' sp -e 076.moe/nitori '.
+
+$ sp -e 076.moe/nitori
+.br
+パスワード：
+.br
+パスワード（確認用）：
+.br
+パスワードを保存出来ました
+
+$ sp -s 076.moe/nitori
+.br
+kappa
+.ED
+
+\&...
+
+$ sp -g
+.br
+\5C'F6=8r&:OO=P?{Ry-3d4%z#7Hki}965l`j2xJSRoHQkvj^nz+YPx4g74yu_OT
+
+$ sp -g 12
+.br
+{%#upiPiayqZ
+
+$ sp -g 12 risk
+.br
+iwxoumJC9wZH
+.ED
+
+\&...
+
+$ doas pkg_add zbar
+.br
+quirks-7.14 signed on 2024-05-21T22:52:07Z
+.br
+zbar-0.23.90p2: ok
+
+$ zbarimg -q --raw Untitled.png
+.br
+otpauth://totp/GitHub:TechnicalSuwako?secret=ABCDEFGHIJKLMNOP&issuer=GitHub
+
+$ sp -a github.com/2fa
+.br
+パスワード：
+.br
+パスワード（確認用）：
+.br
+パスワードを保存出来ました
+
+$ sp -s github.com/2fa
+.br
+otpauth://totp/GitHub:TechnicalSuwako?secret=ABCDEFGHIJKLMNOP&issuer=GitHub
+
+$ sp -o github.com/2fa
+.br
+123456
+.Ed
+.SH AUTHORS
 .PP
-バグは下記のURLまでご報告下さい：
-.br
-https://gitler.moe/suwako/sp/issues
-.br
-.SH コミュニティ
-.TP
-\fBXMPP\fR
-xmpp:moriyajinja@chat.xmpp.076.ne.jp?join
-.TP
-\fBIRC\fR
-ネットワーク名： 076IRC
-.br
-サーバ： irc.076.ne.jp
-.br
-ポート： 6697
-.br
-守谷神社： #moriyajinjya
+テクニカル諏訪子
