@@ -12,7 +12,7 @@ const char *sofname = "sp";
 const char *version = "1.3.0";
 
 void usage() {
-  printf("usage: %s-%s [-adegilosvy]\n", sofname, version);
+  printf("%s-%s\nusage: %s [-adegilosvy]\n", sofname, version, sofname);
 }
 
 char *getfullpath(char *arg) {
