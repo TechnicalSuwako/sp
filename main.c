@@ -61,12 +61,13 @@ int main(int argc, char *argv[]) {
   }
 
   if (strcmp(argv[1], "-g") == 0) {
-    if (argc != 3 && argc != 4) {
+    if (argc > 4) {
       usage();
       return 1;
     }
 
-    if      (argc == 3) genpass(atoi(argv[2]), true);
+    if      (argc == 2) genpass(64, true);
+    else if (argc == 3) genpass(atoi(argv[2]), true);
     else if (argc == 4 && strcmp(argv[3], "risk") == 0)
       genpass(atoi(argv[2]), false);
     else if (argc == 4 && strcmp(argv[3], "secure") == 0)
