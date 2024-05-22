@@ -78,7 +78,11 @@ int main(int argc, char *argv[]) {
 
   if (argc == 3) {
     if      (strcmp(argv[1], "-i") == 0) initpass(argv[2]);
-    else if (strcmp(argv[1], "-s") == 0) printf("%s\n", showpass(argv[2]));
+    else if (strcmp(argv[1], "-s") == 0) {
+      const char *pass = showpass(argv[2]);
+      if (pass == NULL) return -1;
+      printf("%s\n", pass);
+    }
     else if (strcmp(argv[1], "-y") == 0) yankpass(argv[2]);
     else if (strcmp(argv[1], "-a") == 0) addpass(argv[2]);
     else if (strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);

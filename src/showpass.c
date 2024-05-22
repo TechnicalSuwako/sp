@@ -68,10 +68,8 @@ const char *showpass(char *file) {
   if (gpgfile == NULL) {
     if (strncmp(lang, "en", 2) == 0) {
       perror("Failed to opening file");
-      fprintf(stderr, "Failing path: %s\n", gpgpath);
     } else {
       perror("ファイルを開くに失敗");
-      fprintf(stderr, "失敗したパス： %s\n", gpgpath);
     }
     free(gpgpath);
     return NULL;
