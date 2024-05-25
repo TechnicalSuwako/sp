@@ -145,7 +145,6 @@ int delpass(char *file, int force) {
     *ls = '\0';
   }
 
-  // TODO: ここはメモリに関するバグが起こっている為、未だmasterに入れない
   for (int i = 1; i < numt; i++) {
     if (i == (numt-1)) continue;
     strncat(passpath, "/", sizeof(passpath) - strlen(passpath) - 1);
