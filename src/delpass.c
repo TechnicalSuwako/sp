@@ -1,7 +1,90 @@
 #include <unistd.h>
+#include <dirent.h>
 
 #include "common.h"
 #include "delpass.h"
+
+int delcnt(const char *str, char delimiter) {
+  int count = 0;
+  while (*str) {
+    if (*str == delimiter) {
+      count++;
+    }
+    str++;
+  }
+
+  return count;
+}
+
+char **explode(const char *str, char delimiter, int *numtokens) {
+  int count = delcnt(str, delimiter) + 1;
+  *numtokens = count;
+
+  char **tokens = malloc(count * sizeof(char *));
+  if (tokens == NULL) {
+    perror("malloc");
+    exit(EXIT_FAILURE);
+  }
+
+  char *strcopy = strdup(str);
+  if (strcopy == NULL) {
+    perror("strdup");
+    exit(EXIT_FAILURE);
+  }
+
+  char *token = strtok(strcopy, &delimiter);
+  int i = 0;
+  while (token != NULL) {
+    tokens[i] = strdup(token);
+    if (tokens[i] == NULL) {
+      perror("strdup");
+      exit(EXIT_FAILURE);
+    }
+    i++;
+    token = strtok(NULL, &delimiter);
+  }
+
+  free(strcopy);
+
+  return tokens;
+}
+
+void freetokens(char **tokens, int numtokens) {
+  for (int i = 0; i < numtokens; i++) {
+    free(tokens[i]);
+  }
+
+  free(tokens);
+}
+
+bool dirisempty(char *path) {
+  struct dirent *entry;
+  int res = false;
+
+  DIR *dir = opendir(path);
+  if (dir == NULL) {
+    perror("opendir");
+    return false;
+  }
+
+  while ((entry = readdir(dir))) {
+    if (
+        entry->d_name[0] == '.' &&
+        entry->d_name[1] == '\0' &&
+        entry->d_name[1] == '.' &&
+        entry->d_name[2] == '\0'
+    ) {
+      continue;
+    }
+
+    res++;
+    break;
+  }
+
+  closedir(dir);
+
+  return res != 0;
+}
 
 int delpass(char *file, int force) {
   char *lang = getlang();
@@ -30,7 +113,6 @@ int delpass(char *file, int force) {
 
   // ファイルが既に存在するかどうか確認
   snprintf(gpgpathchk, alllen, "%s%s%s%s", homedir, basedir, file, ext);
-
   if (access(gpgpathchk, F_OK) != 0) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Password does not exist");
@@ -79,6 +161,52 @@ int delpass(char *file, int force) {
     return -1;
   }
 
+  // 空のディレクトリの場合
+  int numt;
+  char **tokens = explode(file, '/', &numt);
+
+  char basepath[1024];
+  char passpath[1024];
+  snprintf(basepath, sizeof(basepath), "%s%s", homedir, basedir);
+  snprintf(passpath, sizeof(passpath), "%s%s%s", homedir, basedir, tokens[0]);
+  char *ls = strrchr(basepath, '/');
+  if (ls != NULL) {
+    *ls = '\0';
+  }
+
+  // TODO: ここはメモリに関するバグが起こっている為、未だmasterに入れない
+  for (int i = 1; i < numt; i++) {
+    if (i == (numt-1)) continue;
+    strncat(passpath, "/", sizeof(passpath) - strlen(passpath) - 1);
+    strncat(passpath, tokens[i], sizeof(passpath) - strlen(passpath) - 1);
+  }
+
+  for (int i = numt - 1; i >= 0; i--) {
+    // ~/.local/share/sp を削除したら危険
+    if (strncmp(passpath, basepath, sizeof(passpath)) == 0) {
+      break;
+    }
+
+    // ディレクトリが空じゃない場合、やめろ
+    if (!dirisempty(passpath)) {
+      break;
+    }
+
+    if (rmdir(passpath) == -1) {
+      if (strncmp(lang, "en", 2) == 0) perror("Failed to deleding directory");
+      else perror("ディレクトリを削除に失敗");
+      break;
+    }
+
+    char *last_slash = strrchr(passpath, '/');
+    if (last_slash != NULL) {
+      *last_slash = '\0';
+    }
+  }
+
+  freetokens(tokens, numt);
+
+  // sp -e の場合、「パスワードを削除しました」って要らない
   if (force == 1) return 0;
 
   if (strncmp(lang, "en", 2) == 0) puts("Deleted password");
