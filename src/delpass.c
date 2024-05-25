@@ -57,35 +57,6 @@ void freetokens(char **tokens, int numtokens) {
   free(tokens);
 }
 
-bool dirisempty(char *path) {
-  struct dirent *entry;
-  int res = false;
-
-  DIR *dir = opendir(path);
-  if (dir == NULL) {
-    perror("opendir");
-    return false;
-  }
-
-  while ((entry = readdir(dir))) {
-    if (
-        entry->d_name[0] == '.' &&
-        entry->d_name[1] == '\0' &&
-        entry->d_name[1] == '.' &&
-        entry->d_name[2] == '\0'
-    ) {
-      continue;
-    }
-
-    res++;
-    break;
-  }
-
-  closedir(dir);
-
-  return res != 0;
-}
-
 int delpass(char *file, int force) {
   char *lang = getlang();
 
@@ -187,14 +158,8 @@ int delpass(char *file, int force) {
       break;
     }
 
-    // ディレクトリが空じゃない場合、やめろ
-    if (!dirisempty(passpath)) {
-      break;
-    }
-
+    // ディレクトリが空じゃない場合、削除を止める
     if (rmdir(passpath) == -1) {
-      if (strncmp(lang, "en", 2) == 0) perror("Failed to deleding directory");
-      else perror("ディレクトリを削除に失敗");
       break;
     }
 
