@@ -35,33 +35,32 @@ clean:
 	rm -f ${NAME}
 
 dist: clean
-	mkdir -p dist
-	mkdir -p ${NAME}-${VERSION}
+	mkdir -p release/src ${NAME}-${VERSION}
 	cp -R LICENSE.txt Makefile README.md CHANGELOG.md \
 		${NAME}-completion.zsh ${NAME}.1 main.c src ${NAME}-${VERSION}
 	tar zcfv dist/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	rm -rf ${NAME}-${VERSION}
 
 release-openbsd:
-	mkdir -p release
+	mkdir -p release/bin
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-openbsd-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lintl -liconv
 	strip release/${NAME}-${VERSION}-openbsd-${UNAME_M}
 
 release-freebsd:
-	mkdir -p release
+	mkdir -p release/bin
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-freebsd-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
 	strip release/${NAME}-${VERSION}-freebsd-${UNAME_M}
 
 release-netbsd:
-	mkdir -p release
+	mkdir -p release/bin
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-netbsd-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lcrypt -lc -lassuan -lgpg-error -lintl
 	strip release/${NAME}-${VERSION}-netbsd-${UNAME_M}
 
 release-linux:
-	mkdir -p release
+	mkdir -p release/bin
 	${CC} ${CFLAGS} -o release/${NAME}-${VERSION}-linux-${UNAME_M} ${FILES} \
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error
 	strip release/${NAME}-${VERSION}-linux-${UNAME_M}
