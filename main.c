@@ -9,7 +9,7 @@
 #include "src/otppass.h"
 
 const char *sofname = "sp";
-const char *version = "1.3.0";
+const char *version = "1.4.0";
 
 void usage() {
   printf("%s-%s\nusage: %s [-adegilosvy]\n", sofname, version, sofname);
