@@ -81,6 +81,9 @@ install-zsh:
 	cp sp-completion.zsh ${DESTDIR}${PREFIX}/share/zsh/site-functions/_sp
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/bin/${NAME}
+	rm -rf ${DESTDIR}${PREFIX}/bin/${NAME}
+	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-en.1
+	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
+	rm -rf ${DESTDIR}${PREFIX}/share/zsh/site-functions/_sp
 
 .PHONY: all clean dist install install-zsh uninstall
