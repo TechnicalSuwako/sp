@@ -11,7 +11,7 @@ unsigned char *extract_secret(const char *otpauth_url, size_t *decoded_len) {
   const char *secret_start = strstr(otpauth_url, "secret=");
   if (!secret_start) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("In the middle of the OTPAuth URL, could not found secret");
+      perror("Failed to find secret in the OTPAuth URL");
     else perror("OTPAuth URLの中に、シークレットを見つけられませんでした");
     return NULL;
   }
@@ -28,7 +28,7 @@ unsigned char *extract_secret(const char *otpauth_url, size_t *decoded_len) {
 
   if (secret_end < secret_start) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Illegal secret range");
+      perror("Incorrect secret range");
     else perror("不正なシークレットの距離");
     return NULL;
   }
@@ -38,7 +38,7 @@ unsigned char *extract_secret(const char *otpauth_url, size_t *decoded_len) {
 
   if (secret_encoded == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to allocating memory");
+      perror("Failed to allocate memory");
     else perror("メモリの役割に失敗");
     return NULL;
   }
@@ -51,7 +51,7 @@ unsigned char *extract_secret(const char *otpauth_url, size_t *decoded_len) {
 
   if (!secret_decoded) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to decrypting of the BASE32");
+      perror("Failed to decrypt BASE32");
     else perror("BASE32の復号化に失敗");
     return NULL;
   }
@@ -95,15 +95,15 @@ void otppass(char *file) {
   err = gpgme_new(&ctx);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to generating the GPG");  
-    else perror("GPGMEを創作に失敗"); 
+      perror("Failed to generate the GPG");  
+    else perror("GPGを創作に失敗"); 
     exit(1);
   }
 
   err = gpgme_data_new_from_file(&in, file, 1);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to reading the GPG file");
+      perror("Failed to read the GPG file");
     else perror("GPGファイルを読込に失敗");
     exit(1);
   }
@@ -111,7 +111,7 @@ void otppass(char *file) {
   err = gpgme_data_new(&out);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to reading the GPG data");
+      perror("Failed to read the GPG data");
     else perror("GPGデータを読込に失敗");
     exit(1);
   }
@@ -119,7 +119,7 @@ void otppass(char *file) {
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to decrypting the GPG");
+      perror("Failed to decrypt the GPG");
     else perror("GPGを復号化に失敗");
     exit(1);
   }
@@ -127,7 +127,7 @@ void otppass(char *file) {
   char *secret = gpgme_data_release_and_get_mem(out, &secret_len);
   if (!secret) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to getting the GPG");
+      perror("Failed to get the GPG");
     else perror("GPGを受取に失敗");
     exit(1);
   }
@@ -138,7 +138,7 @@ void otppass(char *file) {
   unsigned char *secret_decoded = extract_secret(secret, &decoded_len);
   if (!secret_decoded) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to decoding or exporting secret");
+      perror("Failed to decode or export secret");
     else perror("シークレットの抽出又はデコードに失敗しました");
     free(secret);
     exit(1);

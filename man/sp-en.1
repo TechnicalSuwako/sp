@@ -4,49 +4,50 @@ sp - Simple Password Manager
 .br
 .B sp
 [-i] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-g \fI\,length\fR [\fI\,secure\fR|\fI\,risk\fR]]
-.SH 説明
+.SH DESCRIPTION
 .PP
-シンプルなパスワードマネージャー。
+Simple Password Manager
 .TP
 \fB\,a\fR \fI\,password\fR
-パスワードを追加
+Add password
 .TP
 \fB\,d\fR \fI\,password\fR
-パスワードを削除
+Delete password
 .TP
 \fB\,e\fR \fI\,password\fR
-パスワードを変更
+Edit password
 .TP
 \fB\,g\fR \fI,length\fR \fI,risk|secure\fR
-希望文字数でパスワードをランダムに作成する。
+Generate a random password using the preferred amount of digits.
 .br
-デフォルトな長さは64文字です。
+The default is 64 characters.
 .br
-secure＝英数字＋特別文字（デフォルト）を使用
+secure = Lower and uppercase + digits + special characters (default)
 .br
-risk＝英数字のみ（不安）を使用
+risk = only lowercase and uppercase + digits
 .TP
 \fB\,i\fR \fI\,gpg-id\fR
-GPGと使ってパスワードストレージを初期設定
+Initialize password storage using GPG
 .TP
 \fB\,l\fR
-パスワード一覧を表示
+Show a list of passwords
 .TP
 \fB\,o\fR \fI\,password\fR
-ワンタイムパスワード（TOTP）を表示。存在しなければ、創作する
+ワンタイムパスワード（TOTP）を表示
+Show one time password (TOTP)
 .TP
 \fB\,s\fR \fI\,password\fR
-パスワードを表示
+Show password
 .TP
 \fB\,v\fR
-バージョンを表示
+Show version
 .TP
 \fB\,y\fR \fI\,password\fR
-パスワードを表示せずクリップボードにコピーする
+Copy password to the clipboard without showing the password (Xorg-only)
 .SH LANGUAGE
-デフォルトの言語は日本語ですが、英語で利用するには、
+The default language is Japanese. In order to use English,
 .br
-「.zshrc」、「.bashrc」等ファイルで「SP_LANG=en」を追加して下さい。
+please add "SP_LANG=en" to the `.zshrc` or `.bashrc` file.
 .SH EXAMPLES
 \&...
 
@@ -63,11 +64,11 @@ $ cat ~/.local/share/sp/.gpg-id
 
 $ sp -a 076.moe/nitori
 .br
-パスワード：
+Password:
 .br
-パスワード（確認用）：
+Password (for verification):
 .br
-パスワードを保存出来ました
+The password got saved.
 
 $ sp -s 076.moe/nitori
 .br
@@ -75,25 +76,25 @@ kyuuri
 
 $ sp -d 076.moe/nitori
 .br
-パスワード「076.moe/nitori」を本当に削除する事が宜しいでしょうか？ (y/N): y
+Are you sure you want to delete the password '076.moe/nitori' (y/N): y
 .br
-パスワードを削除しました
+The password got deleted
 .br
 
 $ sp -s 076.moe/nitori
 .br
-ファイルを開くに失敗: No such file or directory
+Failed to open file: No such file or directory
 .ED
 
 \&...
 
 $ sp -a 076.moe/nitori
 .br
-パスワード：
+Password:
 .br
-パスワード（確認用）：
+Password (for verification):
 .br
-パスワードを保存出来ました
+The password got saved.
 
 $ sp -s 076.moe/nitori
 .br
@@ -113,11 +114,11 @@ For edit, please run ' sp -e 076.moe/nitori '.
 
 $ sp -e 076.moe/nitori
 .br
-パスワード：
+Password:
 .br
-パスワード（確認用）：
+Password (for verification):
 .br
-パスワードを保存出来ました
+The password got saved.
 
 $ sp -s 076.moe/nitori
 .br
@@ -153,11 +154,11 @@ otpauth://totp/GitHub:TechnicalSuwako?secret=ABCDEFGHIJKLMNOP&issuer=GitHub
 
 $ sp -a github.com/2fa
 .br
-パスワード：
+Password:
 .br
-パスワード（確認用）：
+Password (for verification):
 .br
-パスワードを保存出来ました
+The password got saved.
 
 $ sp -s github.com/2fa
 .br
@@ -169,4 +170,5 @@ $ sp -o github.com/2fa
 .Ed
 .SH AUTHORS
 .PP
-テクニカル諏訪子
+Technical Suwako (developer)
+Remilia Scarlet (English translation)

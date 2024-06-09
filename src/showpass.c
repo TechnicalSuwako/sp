@@ -34,7 +34,7 @@ const char *showpass(char *file) {
   err = gpgme_new(&ctx);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to generate GPGME: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
     return NULL;
   }
@@ -46,7 +46,7 @@ const char *showpass(char *file) {
   char *homedir = getenv("HOME");
   if (homedir == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to getting home directory");
+      perror("Failed to get home directory");
     else perror("ホームディレクトリを受取に失敗");
     return NULL;
   }
@@ -57,7 +57,7 @@ const char *showpass(char *file) {
   char *gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to allocating memeory");
+      perror("Failed to allocate memeory");
     else perror("メモリを割当に失敗");
     return NULL;
   }
@@ -67,7 +67,7 @@ const char *showpass(char *file) {
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
     if (strncmp(lang, "en", 2) == 0) {
-      perror("Failed to opening file");
+      perror("Failed to open file");
     } else {
       perror("ファイルを開くに失敗");
     }
@@ -78,7 +78,7 @@ const char *showpass(char *file) {
   // ファイルからinデータオブジェクトを創作
   if (gpgme_data_new_from_stream(&in, gpgfile) != GPG_ERR_NO_ERROR) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to generating the GPGME data object");
+      perror("Failed to generate the GPGME data object");
     else perror("GPGMEデータオブジェクトを創作に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
     return NULL;
@@ -87,7 +87,7 @@ const char *showpass(char *file) {
   // outデータオブジェクトを創作
   if (gpgme_data_new(&out) != GPG_ERR_NO_ERROR) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to generating the GPGME data object");
+      perror("Failed to generate the GPGME data object");
     else perror("GPGMEデータオブジェクトを創作に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
     return NULL;
@@ -100,7 +100,7 @@ const char *showpass(char *file) {
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to decrypting: %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to decrypt: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
 
     // 掃除
@@ -114,7 +114,7 @@ const char *showpass(char *file) {
   char *res = malloc(512 * sizeof(char));
   if (res == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to allocating memory");
+      perror("Failed to allocate memory");
     else perror("メモリを役割に失敗");
     clean_up(ctx, in, out, gpgfile, gpgpath);
     return NULL;

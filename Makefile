@@ -37,7 +37,7 @@ clean:
 dist: clean
 	mkdir -p release/src ${NAME}-${VERSION}
 	cp -R LICENSE.txt Makefile README.md CHANGELOG.md \
-		${NAME}-completion.zsh ${NAME}.1 main.c src ${NAME}-${VERSION}
+		${NAME}-completion.zsh man main.c src ${NAME}-${VERSION}
 	tar zcfv release/src/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	rm -rf ${NAME}-${VERSION}
 
@@ -70,8 +70,12 @@ install: all
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	sed "s/VERSION/${VERSION}/g" < ${NAME}.1 > ${DESTDIR}${MANPREFIX}/man1/${NAME}.1
-	chmod 644 ${DESTDIR}${MANPREFIX}/man1/${NAME}.1
+	sed "s/VERSION/${VERSION}/g" < man/${NAME}-en.1 > \
+		${DESTDIR}${MANPREFIX}/man1/${NAME}-en.1
+	sed "s/VERSION/${VERSION}/g" < man/${NAME}-jp.1 > \
+		${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/${NAME}-en.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
 
 install-zsh:
 	cp sp-completion.zsh ${DESTDIR}${PREFIX}/share/zsh/site-functions/_sp
