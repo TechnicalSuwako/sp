@@ -43,7 +43,7 @@ void addpass(char *file) {
   char *homedir = getenv("HOME");
   if (homedir == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to retrieving home directory");
+      perror("Failed to retrieve home directory");
     else perror("ホームディレクトリを受取に失敗");
     return;
   }
@@ -58,7 +58,7 @@ void addpass(char *file) {
   char *gpgpathchk = malloc(alllen);
   if (gpgpathchk == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to allocating memory");
+      perror("Failed to allocate memory");
     else perror("メモリを割当に失敗");
     return;
   }
@@ -70,7 +70,7 @@ void addpass(char *file) {
     if (strncmp(lang, "en", 2) == 0)
       fprintf(
         stderr,
-        "Password already exist.\nFor edit, please run ' sp -e %s '.\n",
+        "Password already exist.\nTo edit, please run ' sp -e %s '.\n",
         file
       );
     else
@@ -98,7 +98,7 @@ void addpass(char *file) {
   // パスワードが一致するかどうか確認
   if (strcmp(pass, knin) != 0) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Password does not match. Ending...");
+      perror("Password does not match. Terminating...");
     else perror("パスワードが一致していません。終了…");
     return;
   }
@@ -119,7 +119,7 @@ void addpass(char *file) {
   err = gpgme_new(&ctx);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to generating GPGME: %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to generate GPGME: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "GPGMEを創作に失敗：%s\n", gpgme_strerror(err));
     return;
   }
@@ -128,7 +128,7 @@ void addpass(char *file) {
   err = gpgme_set_pinentry_mode(ctx, GPGME_PINENTRY_MODE_LOOPBACK);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to setting pinentry mode: %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to set pinentry mode: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "pinentryモードを設定に失敗： %s\n", gpgme_strerror(err));
     gpgme_release(ctx);
     return;
@@ -138,7 +138,7 @@ void addpass(char *file) {
   err = gpgme_data_new_from_mem(&in, pass, strlen(pass), 0);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to making data object: %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to make data object: %s\n", gpgme_strerror(err));
     else
       fprintf(stderr, "データオブジェクトを創作に失敗： %s\n", gpgme_strerror(err));
     gpgme_release(ctx);
@@ -156,7 +156,7 @@ void addpass(char *file) {
   FILE* keyfile = fopen(keypath, "rb");
   if (keyfile == NULL) {
     if (strncmp(lang, "en", 2) == 0) {
-      perror("Failed to opening .gpg-id file");
+      perror("Failed to open .gpg-id file");
       fprintf(stderr, "Failed path: %s\n", keypath);
     } else {
       perror(".gpg-idファイルを開くに失敗");
@@ -181,7 +181,7 @@ void addpass(char *file) {
   err = gpgme_get_key(ctx, keyid, &key[0], 0);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to getting key: %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to get key: %s\n", gpgme_strerror(err));
     else fprintf(stderr, "鍵を受取に失敗： %s\n", gpgme_strerror(err));
     free(keyid);
     return;
@@ -211,7 +211,7 @@ void addpass(char *file) {
   if (gpgpath == NULL) {
     cleanup(ctx, key[0], in, out);
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to allocating memory");
+      perror("Failed to allocate memory");
     else perror("メモリを割当に失敗");
     return;
   }
@@ -229,7 +229,7 @@ void addpass(char *file) {
       free(gpgpath);
       cleanup(ctx, key[0], in, out);
       if (strncmp(lang, "en", 2) == 0)
-        perror("Failed to constructing directory");
+        perror("Failed to create directory");
       else perror("ディレクトリを創作に失敗");
       return;
     }
@@ -242,7 +242,7 @@ void addpass(char *file) {
     free(gpgpath);
     cleanup(ctx, key[0], in, out);
     if (strncmp(lang, "en", 2) == 0)
-      perror("Password is already exist");
+      perror("Password already exists");
     else perror("パスワードは既に存在しています");
     return;
   }
@@ -250,7 +250,7 @@ void addpass(char *file) {
   gpgfile = fopen(gpgpath, "wb");
   if (gpgfile == NULL) {
     if (strncmp(lang, "en", 2) == 0) {
-      perror("Failed to opening file.");
+      perror("Failed to open file.");
       fprintf(stderr, "Failed path: %s\n", gpgpath);
     } else {
       perror("ファイルを開くに失敗。");
@@ -265,7 +265,7 @@ void addpass(char *file) {
   ssize_t encrypted_data_size = gpgme_data_seek(out, 0, SEEK_END);
   if (encrypted_data_size <= 0) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to saving the data");
+      perror("Failed to store the data");
     else perror("データを保存に失敗");
     fclose(gpgfile);
     free(gpgpath);
@@ -282,7 +282,7 @@ void addpass(char *file) {
   while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer))) > 0) {
     if (fwrite(buffer, 1, (size_t)read_bytes, gpgfile) != (size_t)read_bytes) {
       if (strncmp(lang, "en", 2) == 0)
-        perror("Failed to writing password");
+        perror("Failed to write password");
       else perror("パスワードを書き込みに失敗");
       free(gpgpath);
       cleanup(ctx, key[0], in, out);
@@ -296,6 +296,6 @@ void addpass(char *file) {
   cleanup(ctx, key[0], in, out);
 
   if (strncmp(lang, "en", 2) == 0)
-    puts("I could save the password");
+    puts("The password got saved.");
   else puts("パスワードを保存出来ました");
 }

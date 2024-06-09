@@ -13,7 +13,7 @@ void genpass(int count, bool issecure) {
   FILE *fp = fopen("/dev/random", "rb");
   if (fp == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Could not opening /dev/random");
+      perror("Could not open /dev/random");
     else perror("/dev/randomを開けられませんでした");
     exit(EXIT_FAILURE);
   }

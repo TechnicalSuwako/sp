@@ -65,7 +65,7 @@ int delpass(char *file, int force) {
   char *homedir = getenv("HOME");
   if (homedir == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to getting home directory");
+      perror("Failed to get home directory");
     else perror("ホームディレクトリを受取に失敗");
     return -1;
   }
@@ -77,7 +77,7 @@ int delpass(char *file, int force) {
   char *gpgpathchk = malloc(alllen);
   if (gpgpathchk == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to allocating memory");
+      perror("Failed to allocate memory");
     else perror("メモリを割当に失敗");
     return -1;
   }
@@ -112,7 +112,7 @@ int delpass(char *file, int force) {
   // 削除を確認する
   if (force == 0) { // パスワードの変更の場合、確認は不要
     if (strncmp(lang, "en", 2) == 0)
-      printf("Is it really good if I delete the password '%s'? (y/N): ", file);
+      printf("Are you sure you want to delete the password '%s'? (y/N): ", file);
     printf("パスワード「%s」を本当に削除する事が宜しいでしょうか？ (y/N): ", file);
     int confirm = getchar();
     if (confirm != 'y' && confirm != 'Y') {
@@ -127,7 +127,7 @@ int delpass(char *file, int force) {
 
   if (unlink(pwfile) == -1) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Password cannot be delete");
+      perror("Password cannot be deleted");
     else perror("パスワードを削除出来ませんですた");
     return -1;
   }
@@ -173,7 +173,7 @@ int delpass(char *file, int force) {
   // sp -e の場合、「パスワードを削除しました」って要らない
   if (force == 1) return 0;
 
-  if (strncmp(lang, "en", 2) == 0) puts("Deleted password");
+  if (strncmp(lang, "en", 2) == 0) puts("The password got deleted");
   else puts("パスワードを削除しました");
 
   return 0;
