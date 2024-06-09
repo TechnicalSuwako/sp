@@ -1,6 +1,10 @@
 UNAME_S != uname -s
 UNAME_M != uname -m
 
+.if ${UNAME_M} == "x86_64"
+UNAME_M = amd64
+.endif
+
 NAME != cat main.c | grep "const char \*sofname" | awk '{print $$5}' | \
 	sed "s/\"//g" | sed "s/;//"
 VERSION != cat main.c | grep "const char \*version" | awk '{print $$5}' | \
