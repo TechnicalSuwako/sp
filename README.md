@@ -27,12 +27,28 @@ doas make install
 doas make install-zsh
 ```
 
+### NetBSD
+```sh
+doas pkgin install gpgme gnupg pinentry
+make
+doas make install
+doas make install-zsh
+```
+
 ### FreeBSD
 ```sh
 doas pkg install gpgme gnupg pinentry
 make
 doas make install
 doas make install-zsh
+```
+
+### macOS
+```sh
+brew install bmake libassuan gpgme gnupg pinentry pinentry-mac
+bmake
+doas bmake install
+doas bmake install-zsh
 ```
 
 ## 初期設定 | Initial setup
