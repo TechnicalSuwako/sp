@@ -26,7 +26,11 @@ char *getfullpath(char *arg) {
     return NULL;
   }
 
+#if defined(__HAIKU__)
+  char *basedir = "/config/settings/sp/";
+#else
   char *basedir = "/.local/share/sp/";
+#endif
   size_t fullPathLen;
   char *fullPath;
   if (arg != NULL) {

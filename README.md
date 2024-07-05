@@ -35,6 +35,14 @@ doas make install
 doas make install-zsh
 ```
 
+### Haiku
+```sh
+pkgman install bmake libassuan libassuan_devel gpgme gpgme_devel gnupg llvm18_clang
+bmake
+bmake install
+bmake install-zsh
+```
+
 ## 初期設定 | Initial setup
 「gpg -k」でGPG鍵IDを確認して、「sp -i [GPG ID]」を実行して下さい。
 Confirm your GPG key ID with "gpg -k", and run "sp -i [GPG ID]".
