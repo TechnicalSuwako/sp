@@ -52,7 +52,7 @@ const char *showpass(char *file) {
   }
 
 #if defined(__HAIKU__)
-  char *basedir = "/config/settings/sp/"
+  char *basedir = "/config/settings/sp/";
 #else
   char *basedir = "/.local/share/sp/";
 #endif
