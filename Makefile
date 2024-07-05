@@ -11,7 +11,7 @@ VERSION != cat main.c | grep "const char \*version" | awk '{print $$5}' | \
 	sed "s/\"//g" | sed "s/;//"
 PREFIX = /usr/local
 .if ${UNAME_S} == "Haiku"
-PREFIX = /boot/system
+PREFIX = /boot/home/config/non-packaged
 .elif ${UNAME_S} == "Linux"
 PREFIX = /usr
 .endif
@@ -75,7 +75,7 @@ release-linux:
 	strip release/bin/${NAME}-${VERSION}-linux-${UNAME_M}
 
 install:
-	mkdir -p ${DESTDIR}${PREFIX}/bin
+	mkdir -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${MANPREFIX}/man1
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
@@ -87,6 +87,7 @@ install:
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
 
 install-zsh:
+	mkdir -p ${DESTDIR}${DATAPREFIX}/zsh/site-functions
 	cp sp-completion.zsh ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_sp
 
 uninstall:
