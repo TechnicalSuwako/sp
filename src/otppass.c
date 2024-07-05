@@ -1,7 +1,7 @@
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 
-#ifndef __APPLE
+#if defined(__APPLE)
 #include <libkern/OSByteOrder.h>
 #define htobe64(x) OSSwapHostToBigInt64(x)
 #endif
