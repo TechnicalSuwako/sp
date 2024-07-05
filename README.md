@@ -27,6 +27,14 @@ doas make install
 doas make install-zsh
 ```
 
+### NetBSD
+```sh
+doas pkgin install gpgme gnupg pinentry
+make
+doas make install
+doas make install-zsh
+```
+
 ### FreeBSD
 ```sh
 doas pkg install gpgme gnupg pinentry
@@ -41,6 +49,14 @@ pkgman install bmake libassuan libassuan_devel gpgme gpgme_devel gnupg llvm18_cl
 bmake
 bmake install
 bmake install-zsh
+```
+
+### macOS
+```sh
+brew install bmake libassuan gpgme gnupg pinentry pinentry-mac
+bmake
+doas bmake install
+doas bmake install-zsh
 ```
 
 ## 初期設定 | Initial setup
