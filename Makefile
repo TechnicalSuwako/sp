@@ -74,7 +74,7 @@ release-linux:
 		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error
 	strip release/bin/${NAME}-${VERSION}-linux-${UNAME_M}
 
-install: all
+install:
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
