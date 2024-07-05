@@ -51,7 +51,11 @@ const char *showpass(char *file) {
     return NULL;
   }
 
+#if defined(__HAIKU__)
+  char *basedir = "/config/settings/sp/";
+#else
   char *basedir = "/.local/share/sp/";
+#endif
   char *ext = ".gpg";
   int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
   char *gpgpath = malloc(alllen);

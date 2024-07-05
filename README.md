@@ -43,6 +43,14 @@ doas make install
 doas make install-zsh
 ```
 
+### Haiku
+```sh
+pkgman install bmake libassuan libassuan_devel gpgme gpgme_devel gnupg llvm18_clang
+bmake
+bmake install
+bmake install-zsh
+```
+
 ### macOS
 ```sh
 brew install bmake libassuan gpgme gnupg pinentry pinentry-mac

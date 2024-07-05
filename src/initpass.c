@@ -12,7 +12,11 @@ void initpass(char *gpgid) {
     return;
   }
 
+#if defined(__HAIKU)
+  char *basedir = "/config/settings/sp/";
+#else
   char *basedir = "/.local/share/sp/";
+#endif
   char dirpath[256];
   snprintf(dirpath, sizeof(dirpath), "%s%s", homedir, basedir);
 
