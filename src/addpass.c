@@ -48,7 +48,11 @@ void addpass(char *file) {
     return;
   }
 
+#if defined(__HAIKU__)
+  char *basedir = "/config/settings/sp/"
+#else
   char *basedir = "/.local/share/sp/";
+#endif
   char *ext = ".gpg";
 
   char pass[256];

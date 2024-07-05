@@ -59,6 +59,25 @@ unsigned char *extract_secret(const char *otpauth_url, size_t *decoded_len) {
   return secret_decoded;
 }
 
+#if defined(__HAIKU__)
+uint64_t htobe64(uint64_t counter) {
+  uint64_t res = 0;
+  uint8_t *dest = (uint8_t *)&res;
+  uint8_t *src = (uint8_t *)&counter;
+
+  dest[0] = src[7];
+  dest[1] = src[6];
+  dest[2] = src[5];
+  dest[3] = src[4];
+  dest[4] = src[3];
+  dest[5] = src[2];
+  dest[6] = src[1];
+  dest[7] = src[0];
+
+  return res;
+}
+#endif
+
 uint32_t generate_totp(const char *secret, uint64_t counter) {
   counter = htobe64(counter);
 

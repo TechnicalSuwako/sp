@@ -10,17 +10,22 @@ NAME != cat main.c | grep "const char \*sofname" | awk '{print $$5}' | \
 VERSION != cat main.c | grep "const char \*version" | awk '{print $$5}' | \
 	sed "s/\"//g" | sed "s/;//"
 PREFIX = /usr/local
-
-MANPREFIX = ${PREFIX}/man
-
-.if ${UNAME_S} == "FreeBSD"
-MANPREFIX = ${PREFIX}/share/man
+.if ${UNAME_S} == "Haiku"
+PREFIX = /boot/system
 .elif ${UNAME_S} == "Linux"
 PREFIX = /usr
+.endif
+
 MANPREFIX = ${PREFIX}/share/man
-.elif ${UNAME_S} == "NetBSD"
-PREFIX = /usr/pkg
-MANPREFIX = ${PREFIX}/share/man
+.if ${UNAME_S} == "OpenBSD"
+MANPREFIX = ${PREFIX}/man
+.elif ${UNAME_S} == "Haiku"
+MANPREFIX = ${PREFIX}/documentation/man
+.endif
+
+DATAPREFIX = ${PREFIX}/share
+.if ${UNAME_S} == "Haiku"
+DATAPREFIX = ${PREFIX}/data
 .endif
 
 CC = cc
@@ -82,12 +87,12 @@ install: all
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
 
 install-zsh:
-	cp sp-completion.zsh ${DESTDIR}${PREFIX}/share/zsh/site-functions/_sp
+	cp sp-completion.zsh ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_sp
 
 uninstall:
 	rm -rf ${DESTDIR}${PREFIX}/bin/${NAME}
 	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-en.1
 	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
-	rm -rf ${DESTDIR}${PREFIX}/share/zsh/site-functions/_sp
+	rm -rf ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_sp
 
 .PHONY: all clean dist install install-zsh uninstall
