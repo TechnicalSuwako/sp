@@ -13,7 +13,7 @@ void initpass(char *gpgid) {
   }
 
 #if defined(__HAIKU)
-  char *basedir = "/config/settings/sp/"
+  char *basedir = "/config/settings/sp/";
 #else
   char *basedir = "/.local/share/sp/";
 #endif
