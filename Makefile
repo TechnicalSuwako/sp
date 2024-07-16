@@ -1,5 +1,16 @@
 UNAME_S != uname -s
 UNAME_M != uname -m
+OS = ${UNAME_S}
+
+.if ${UNAME_S} == "OpenBSD"
+OS = openbsd
+.elif ${UNAME_S} == "NetBSD"
+OS = netbsd
+.elif ${UNAME_S} == "FreeBSD"
+OS = freebsd
+.elif ${UNAME_S} == "Linux"
+OS = linux
+.endif
 
 .if ${UNAME_M} == "x86_64"
 UNAME_M = amd64
@@ -36,6 +47,17 @@ CFLAGS += -I/usr/local/include -L/usr/local/lib -I/usr/include -L/usr/lib
 .endif
 LDFLAGS = -lgpgme -lcrypto
 
+SLDFLAGS = -static ${LDFLAGS}
+.if ${UNAME_S} == "OpenBSD"
+SLDFLAGS += -lc -lassuan -lgpg-error -lintl -liconv
+.elif ${UNAME_S} == "FreeBSD"
+SLDFLAGS += -lc -lassuan -lgpg-error -lthr -lintl
+.elif ${UNAME_S} == "NetBSD"
+SLDFLAGS += -lcrypt -lc -lassuan -lgpg-error -lintl
+.elif ${UNAME_S}
+SLDFLAGS += -lc -lassuan -lgpg-error
+.endif
+
 all:
 	${CC} ${CFLAGS} -o ${NAME} ${FILES} ${LDFLAGS}
 	strip ${NAME}
@@ -50,29 +72,18 @@ dist: clean
 	tar zcfv release/src/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	rm -rf ${NAME}-${VERSION}
 
-release-openbsd:
-	mkdir -p release/bin
-	${CC} ${CFLAGS} -o release/bin/${NAME}-${VERSION}-openbsd-${UNAME_M} ${FILES} \
-		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lintl -liconv
-	strip release/bin/${NAME}-${VERSION}-openbsd-${UNAME_M}
+man:
+	mkdir -p release/man/${VERSION}
+	sed "s/VERSION/${VERSION}/g" < man/${NAME}-en.1 > \
+		release/man/${VERSION}/${NAME}-en.1
+	sed "s/VERSION/${VERSION}/g" < man/${NAME}-jp.1 > \
+		release/man/${VERSION}/${NAME}-jp.1
 
-release-freebsd:
-	mkdir -p release/bin
-	${CC} ${CFLAGS} -o release/bin/${NAME}-${VERSION}-freebsd-${UNAME_M} ${FILES} \
-		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error -lthr -lintl
-	strip release/bin/${NAME}-${VERSION}-freebsd-${UNAME_M}
-
-release-netbsd:
-	mkdir -p release/bin
-	${CC} ${CFLAGS} -o release/bin/${NAME}-${VERSION}-netbsd-${UNAME_M} ${FILES} \
-		-static -lgpgme -lcrypto -lcrypt -lc -lassuan -lgpg-error -lintl
-	strip release/bin/${NAME}-${VERSION}-netbsd-${UNAME_M}
-
-release-linux:
-	mkdir -p release/bin
-	${CC} ${CFLAGS} -o release/bin/${NAME}-${VERSION}-linux-${UNAME_M} ${FILES} \
-		-static -lgpgme -lcrypto -lc -lassuan -lgpg-error
-	strip release/bin/${NAME}-${VERSION}-linux-${UNAME_M}
+release:
+	mkdir -p release/bin/${VERSION}/${OS}/${UNAME_M}
+	${CC} ${CFLAGS} -o release/bin/${VERSION}/${OS}/${UNAME_M}/${NAME} ${FILES} \
+		${SLDFLAGS}
+	strip release/bin/${VERSION}/${OS}/${UNAME_M}/${NAME}
 
 install:
 	mkdir -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${MANPREFIX}/man1
@@ -96,4 +107,4 @@ uninstall:
 	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
 	rm -rf ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_sp
 
-.PHONY: all clean dist install install-zsh uninstall
+.PHONY: all clean dist man release install install-zsh uninstall
