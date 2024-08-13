@@ -43,7 +43,7 @@ CC = cc
 FILES = main.c src/*.c
 CFLAGS = -Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
 .if ${UNAME_S} == "NetBSD"
-CFLAGS += -I/usr/local/include -L/usr/local/lib -I/usr/include -L/usr/lib
+CFLAGS += -I/usr/pkg/include -L/usr/pkg/lib -I/usr/include -L/usr/lib
 .endif
 LDFLAGS = -lgpgme -lcrypto
 
