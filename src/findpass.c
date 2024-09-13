@@ -70,6 +70,8 @@ void scanDir(const char *dpath, const char *rpath, List *fpaths) {
       char *disname = strdup(rel);
       rmext(disname);
       addElement(&dispaths, disname);
+
+      free(disname);
     }
   }
 

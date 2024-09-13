@@ -41,26 +41,32 @@ DATAPREFIX = ${PREFIX}/data
 
 CC = cc
 FILES = main.c src/*.c
-CFLAGS = -Wall -Wextra -O3 -I${PREFIX}/include -L${PREFIX}/lib
+
+CFLAGS = -Wall -Wextra -I/usr/include -L/usr/lib
 .if ${UNAME_S} == "NetBSD"
-CFLAGS += -I/usr/pkg/include -L/usr/pkg/lib -I/usr/include -L/usr/lib
+CFLAGS += -I/usr/pkg/include -L/usr/pkg/lib -I/usr/local/include -L/usr/local/lib
+.elif ${UNAME_S} == "OpenBSD" || ${UNAME_S} == "FreeBSD"
+CFLAGS += -I/usr/local/include -L/usr/local/lib
 .endif
+
 LDFLAGS = -lgpgme -lcrypto
 
-SLDFLAGS = -static ${LDFLAGS}
 .if ${UNAME_S} == "OpenBSD"
-SLDFLAGS += -lc -lassuan -lgpg-error -lintl -liconv
+LDFLAGS += -lc -lassuan -lgpg-error -lintl -liconv
 .elif ${UNAME_S} == "FreeBSD"
-SLDFLAGS += -lc -lassuan -lgpg-error -lthr -lintl
+LDFLAGS += -lc -lassuan -lgpg-error -lthr -lintl
 .elif ${UNAME_S} == "NetBSD"
-SLDFLAGS += -lcrypt -lc -lassuan -lgpg-error -lintl
-.elif ${UNAME_S}
-SLDFLAGS += -lc -lassuan -lgpg-error
+LDFLAGS += -lcrypt -lc -lassuan -lgpg-error -lintl
+.elif ${UNAME_S} == "Linux"
+LDFLAGS += -lc -lassuan -lgpg-error
 .endif
 
 all:
-	${CC} ${CFLAGS} -o ${NAME} ${FILES} ${LDFLAGS}
+	${CC} -O3 ${CFLAGS} -o ${NAME} ${FILES} -static ${LDFLAGS}
 	strip ${NAME}
+
+debug:
+	${CC} -g ${CFLAGS} -o ${NAME} ${FILES} ${LDFLAGS}
 
 clean:
 	rm -f ${NAME}
@@ -81,8 +87,8 @@ man:
 
 release:
 	mkdir -p release/bin/${VERSION}/${OS}/${UNAME_M}
-	${CC} ${CFLAGS} -o release/bin/${VERSION}/${OS}/${UNAME_M}/${NAME} ${FILES} \
-		${SLDFLAGS}
+	${CC} -O3 ${CFLAGS} -o release/bin/${VERSION}/${OS}/${UNAME_M}/${NAME} ${FILES} \
+		-static ${LDFLAGS}
 	strip release/bin/${VERSION}/${OS}/${UNAME_M}/${NAME}
 
 install:
