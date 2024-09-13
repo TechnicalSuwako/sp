@@ -7,12 +7,13 @@
 #include "src/delpass.h"
 #include "src/genpass.h"
 #include "src/otppass.h"
+#include "src/findpass.h"
 
 const char *sofname = "sp";
 const char *version = "1.4.0";
 
 void usage() {
-  printf("%s-%s\nusage: %s [-adegilosvy]\n", sofname, version, sofname);
+  printf("%s-%s\nusage: %s [-adefgilosvy]\n", sofname, version, sofname);
 }
 
 char *getfullpath(char *arg) {
@@ -97,6 +98,11 @@ int main(int argc, char *argv[]) {
       char *fullPath = getfullpath(argv[2]);
       if (fullPath == NULL) return -1;
       otppass(fullPath);
+      free(fullPath);
+    } else if (strcmp(argv[1], "-f") == 0) {
+      char *fullPath = getfullpath(NULL);
+      if (fullPath == NULL) return -1;
+      findpass(fullPath, argv[2]);
       free(fullPath);
     } else {
       usage();

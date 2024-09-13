@@ -10,7 +10,25 @@
 
 #include <gpgme.h>
 
+typedef struct Node {
+  char *data;
+  struct Node *next;
+} Node;
+
+typedef struct {
+  Node *head;
+  Node *tail;
+  size_t size;
+} List;
+
 char *getlang();
 int mkdir_r(const char *path, mode_t mode);
+
+// C言語のvector
+void initList(List *list);
+void addElement(List *list, const char *data);
+char *getElement(List *list, size_t idx);
+void rmElement(List *list, size_t idx);
+void freeList(List *list);
 
 #endif
