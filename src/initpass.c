@@ -4,52 +4,38 @@
 void initpass(char *gpgid) {
   char *lang = getlang();
 
-  char *homedir = getenv("HOME");
-  if (homedir == NULL) {
-    if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to get home directory.");
-    else perror("ホームディレクトリを受取に失敗。");
-    return;
-  }
+  char *basedir = getbasedir(1);
 
-#if defined(__HAIKU)
-  char *basedir = "/config/settings/sp/";
-#else
-  char *basedir = "/.local/share/sp/";
-#endif
-  char dirpath[256];
-  snprintf(dirpath, sizeof(dirpath), "%s%s", homedir, basedir);
-
-  if (mkdir_r(dirpath, 0755) != 0 && errno != EEXIST) {
+  if (mkdir_r(basedir, 0755) != 0 && errno != EEXIST) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to create directory.");
-    else perror("ディレクトリを作成に失敗。");
+      fprintf(stderr, "Failed to create directory.\n");
+    else fprintf(stderr, "ディレクトリを作成に失敗。\n");
     return;
   }
 
   char gpgidpath[512];
-  snprintf(gpgidpath, sizeof(gpgidpath), "%s/.gpg-id", dirpath);
+  snprintf(gpgidpath, sizeof(gpgidpath), "%s/.gpg-id", basedir);
 
   struct stat statbuf;
   if (stat(gpgidpath, &statbuf) == 0) {
     if (strncmp(lang, "en", 2) == 0)
-      perror(".gpg-id file already exists.");
-    else perror(".gpg-idファイルは既に存在します。");
+      fprintf(stderr, ".gpg-id file already exists.\n");
+    else fprintf(stderr, ".gpg-idファイルは既に存在します。\n");
     return;
   }
 
   FILE *gpgidfile = fopen(gpgidpath, "w");
   if (gpgidfile == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to write .gpg-id file.");
-    else perror(".gpg-idファイルを書き込めません。");
+      fprintf(stderr, "Failed to write .gpg-id file.\n");
+    else fprintf(stderr, ".gpg-idファイルを書き込めません。\n");
     return;
   }
 
-  if (fputs(gpgid, gpgidfile) == EOF) {
+  if (fprintf(gpgidfile, "%s\n", gpgid) < 0) {
     if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to write .gpg-id file.");
-    else perror(".gpg-idファイルへの書き込みに失敗しました。");
+      fprintf(stderr, "Failed to write .gpg-id file.\n");
+    else fprintf(stderr, ".gpg-idファイルへの書き込みに失敗しました。\n");
     fclose(gpgidfile);
     return;
   }

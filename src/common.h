@@ -21,6 +21,7 @@ typedef struct {
   size_t size;
 } List;
 
+char *getbasedir(int trailing);
 char *getlang();
 int mkdir_r(const char *path, mode_t mode);
 

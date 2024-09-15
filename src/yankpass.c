@@ -40,21 +40,9 @@ void yankpass(char *file) {
   gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
 
   // 暗号化したタイルを開く
-  char* homedir = getenv("HOME");
-  if (homedir == NULL) {
-    if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to get home directory");
-    else perror("ホームディレクトリを受取に失敗");
-    return;
-  }
-
-#if defined(__HAIKU__)
-  char *basedir = "/config/settings/sp/";
-#else
-  char* basedir = "/.local/share/sp/";
-#endif
+  char *basedir = getbasedir(1);
   char* ext = ".gpg";
-  int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
+  int alllen = snprintf(NULL, 0, "%s%s%s", basedir, file, ext) + 1;
   char* gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
     if (strncmp(lang, "en", 2) == 0)
@@ -63,7 +51,7 @@ void yankpass(char *file) {
     return;
   }
 
-  snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  snprintf(gpgpath, alllen, "%s%s%s", basedir, file, ext);
   gpgfile = fopen(gpgpath, "rb");
   if (gpgfile == NULL) {
     if (strncmp(lang, "en", 2) == 0) {

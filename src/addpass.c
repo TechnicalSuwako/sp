@@ -40,25 +40,13 @@ void addpass(char *file) {
   char *lang = getlang();
 
   // パスを準備
-  char *homedir = getenv("HOME");
-  if (homedir == NULL) {
-    if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to retrieve home directory");
-    else perror("ホームディレクトリを受取に失敗");
-    return;
-  }
-
-#if defined(__HAIKU__)
-  char *basedir = "/config/settings/sp/";
-#else
-  char *basedir = "/.local/share/sp/";
-#endif
+  char *basedir = getbasedir(1);
   char *ext = ".gpg";
 
   char pass[256];
   char knin[256];
 
-  int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
+  int alllen = snprintf(NULL, 0, "%s%s%s", basedir, file, ext) + 1;
   char *gpgpathchk = malloc(alllen);
   if (gpgpathchk == NULL) {
     if (strncmp(lang, "en", 2) == 0)
@@ -68,7 +56,7 @@ void addpass(char *file) {
   }
 
   // ファイルが既に存在するかどうか確認
-  snprintf(gpgpathchk, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  snprintf(gpgpathchk, alllen, "%s%s%s", basedir, file, ext);
 
   if (access(gpgpathchk, F_OK) != -1) {
     if (strncmp(lang, "en", 2) == 0)
@@ -153,7 +141,7 @@ void addpass(char *file) {
 
   // 鍵を受け取る
   char keypath[256];
-  snprintf(keypath, sizeof(keypath), "%s%s%s", homedir, basedir, ".gpg-id");
+  snprintf(keypath, sizeof(keypath), "%s%s", basedir, ".gpg-id");
 
   keypath[sizeof(keypath) - 1] = '\0';
 
@@ -222,7 +210,7 @@ void addpass(char *file) {
 
   // ディレクトリを創作
   char dirpath[512];
-  snprintf(dirpath, sizeof(dirpath), "%s%s%s", homedir, basedir, file);
+  snprintf(dirpath, sizeof(dirpath), "%s%s", basedir, file);
 
   dirpath[sizeof(dirpath) - 1] = '\0';
 
@@ -239,7 +227,7 @@ void addpass(char *file) {
     }
   }
 
-  snprintf(gpgpath, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  snprintf(gpgpath, alllen, "%s%s%s", basedir, file, ext);
 
   struct stat statbuf;
   if (stat(gpgpath, &statbuf) == 0) {

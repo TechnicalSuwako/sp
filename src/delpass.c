@@ -62,22 +62,10 @@ int delpass(char *file, int force) {
 
   // パスを準備
   char pwfile[512];
-  char *homedir = getenv("HOME");
-  if (homedir == NULL) {
-    if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to get home directory");
-    else perror("ホームディレクトリを受取に失敗");
-    return -1;
-  }
-
-#if defined(__HAIKU__)
-  char *basedir = "/config/settings/sp/";
-#else
-  char *basedir = "/.local/share/sp/";
-#endif
+  char *basedir = getbasedir(1);
   char *ext = ".gpg";
 
-  int alllen = snprintf(NULL, 0, "%s%s%s%s", homedir, basedir, file, ext) + 1;
+  int alllen = snprintf(NULL, 0, "%s%s%s", basedir, file, ext) + 1;
   char *gpgpathchk = malloc(alllen);
   if (gpgpathchk == NULL) {
     if (strncmp(lang, "en", 2) == 0)
@@ -87,7 +75,7 @@ int delpass(char *file, int force) {
   }
 
   // ファイルが既に存在するかどうか確認
-  snprintf(gpgpathchk, alllen, "%s%s%s%s", homedir, basedir, file, ext);
+  snprintf(gpgpathchk, alllen, "%s%s%s", basedir, file, ext);
   if (access(gpgpathchk, F_OK) != 0) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Password does not exist");
@@ -97,15 +85,7 @@ int delpass(char *file, int force) {
   }
   free(gpgpathchk);
 
-  int needed = snprintf(
-    pwfile,
-    sizeof(pwfile),
-    "%s%s%s%s",
-    homedir,
-    basedir,
-    file,
-    ext
-  );
+  int needed = snprintf( pwfile, sizeof(pwfile), "%s%s%s", basedir, file, ext);
   if (needed >= (int)sizeof(pwfile)) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Error: Path is too long");
@@ -140,11 +120,9 @@ int delpass(char *file, int force) {
   int numt;
   char **tokens = explode(file, '/', &numt);
 
-  char basepath[1024];
   char passpath[1024];
-  snprintf(basepath, sizeof(basepath), "%s%s", homedir, basedir);
-  snprintf(passpath, sizeof(passpath), "%s%s%s", homedir, basedir, tokens[0]);
-  char *ls = strrchr(basepath, '/');
+  snprintf(passpath, sizeof(passpath), "%s%s", basedir, tokens[0]);
+  char *ls = strrchr(basedir, '/');
   if (ls != NULL) {
     *ls = '\0';
   }
@@ -157,7 +135,7 @@ int delpass(char *file, int force) {
 
   for (int i = numt - 1; i >= 0; i--) {
     // ~/.local/share/sp を削除したら危険
-    if (strncmp(passpath, basepath, sizeof(passpath)) == 0) {
+    if (strncmp(passpath, basedir, sizeof(passpath)) == 0) {
       break;
     }
 

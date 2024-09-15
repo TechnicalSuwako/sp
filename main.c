@@ -22,41 +22,24 @@ void usage() {
 char *getfullpath(char *arg) {
   char *lang = getlang();
 
-  char *homedir = getenv("HOME");
-  if (homedir == NULL) {
-    if (strncmp(lang, "en", 2) == 0)
-      perror("Failed to getting home directory");
-    else perror("ホームディレクトリを受取に失敗");
-    return NULL;
-  }
-
-#if defined(__HAIKU__)
-  char *basedir = "/config/settings/sp/";
-#else
-  char *basedir = "/.local/share/sp/";
-#endif
+  char *basedir = getbasedir(1);
   size_t fullPathLen;
   char *fullPath;
-  if (arg != NULL) {
-    fullPathLen = strlen(homedir) + strlen(basedir) + strlen(arg) + 5;
-  } else {
-    fullPathLen = strlen(homedir) + strlen(basedir);
-  }
+  fullPathLen = strlen(basedir) + (arg != NULL ? strlen(arg) + 5 : 0);
 
   fullPath = (char *)malloc(fullPathLen);
   if (fullPath == NULL) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to allocating memory");
     else perror("メモリの役割に失敗");
-    free(fullPath);
-    free(homedir);
+    free(basedir);
     return NULL;
   }
 
   if (arg != NULL) {
-    snprintf(fullPath, fullPathLen, "%s%s%s.gpg", homedir, basedir, arg);
+    snprintf(fullPath, fullPathLen, "%s%s.gpg", basedir, arg);
   } else {
-    snprintf(fullPath, fullPathLen, "%s%s", homedir, basedir);
+    snprintf(fullPath, fullPathLen, "%s", basedir);
   }
 
   return fullPath;

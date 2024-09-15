@@ -1,6 +1,44 @@
 #include "common.h"
 #include <string.h>
 
+char *getbasedir(int trailing) {
+  char *lang = getlang();
+
+  char *homedir = getenv("HOME");
+  if (homedir == NULL) {
+    if (strncmp(lang, "en", 2) == 0)
+      perror("Failed to get home directory");
+    else perror("ホームディレクトリを受取に失敗");
+    return NULL;
+  }
+
+#if defined(__HAIKU__)
+  char *basedir = "/config/settings/sp";
+  char *slash = "/";
+#elif defined(_WIN32)
+  char *basedir = "\\AppData\\Local\\076\\sp";
+  char *slash = "\\";
+#else
+  char *basedir = "/.local/share/sp";
+  char *slash = "/";
+#endif
+
+  size_t len = strlen(homedir) + strlen(basedir) + strlen(slash) + 4;
+  char *res = malloc(len);
+  if (res == NULL) {
+    if (strncmp(lang, "en", 2) == 0)
+      perror("Failed to allocate memory");
+    else perror("メモリの役割に失敗");
+    return NULL;
+  }
+  if (trailing == 1)
+    snprintf(res, len, "%s%s%s", homedir, basedir, slash);
+  else
+    snprintf(res, len, "%s%s", homedir, basedir);
+
+  return res;
+}
+
 char *getlang() {
   char *lang = NULL;
 
