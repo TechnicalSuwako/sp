@@ -11,9 +11,12 @@
 
 const char *sofname = "sp";
 const char *version = "1.4.0";
+const char *avalopt = "adefgilosvy";
+const char *madefor = "simpas 1.0.0";
 
 void usage() {
-  printf("%s-%s\nusage: %s [-adefgilosvy]\n", sofname, version, sofname);
+  printf("%s-%s (%s)\nusage: %s [-%s]\n",
+         sofname, version, madefor, sofname, avalopt);
 }
 
 char *getfullpath(char *arg) {
