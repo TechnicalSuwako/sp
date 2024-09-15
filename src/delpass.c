@@ -132,7 +132,7 @@ int delpass(char *file, int force) {
   if (unlink(pwfile) == -1) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Password cannot be deleted");
-    else perror("パスワードを削除出来ませんですた");
+    else perror("パスワードを削除出来ませんでした");
     return -1;
   }
 

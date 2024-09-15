@@ -43,7 +43,6 @@ void initpass(char *gpgid) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to write .gpg-id file.");
     else perror(".gpg-idファイルを書き込めません。");
-    fclose(gpgidfile);
     return;
   }
 
@@ -56,6 +55,7 @@ void initpass(char *gpgid) {
   }
 
   fclose(gpgidfile);
+
   if (strncmp(lang, "en", 2) == 0)
     puts("Initialization completed.");
   else puts("初期設定に完了しました。");
