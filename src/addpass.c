@@ -198,7 +198,7 @@ void addpass(char *file) {
     return;
   }
 
-  // 暗号化したタイルを開く
+  // 暗号化したファイルを開く
   char *gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
     cleanup(ctx, key[0], in, out);
