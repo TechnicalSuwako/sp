@@ -36,7 +36,7 @@ void getpasswd(char *prompt, char *pw, size_t pwlen) {
   tcsetattr(fileno(stdin), TCSANOW, &old);
 }
 
-void addpass(char *file) {
+int addpass(char *file) {
   char *lang = getlang();
 
   // パスを準備
@@ -52,7 +52,7 @@ void addpass(char *file) {
     const char *ero = (strncmp(lang, "en", 2) == 0 ?
         "Failed to allocate memory" : "メモリを割当に失敗");
     fprintf(stderr, "%s\n", ero);
-    return;
+    return -1;
   }
 
   // ファイルが既に存在するかどうか確認
@@ -73,7 +73,7 @@ void addpass(char *file) {
         file
       );
     free(gpgpathchk);
-    return;
+    return -1;
   }
   free(gpgpathchk);
 
@@ -93,7 +93,7 @@ void addpass(char *file) {
         "Password does not match. Terminating..." :
         "パスワードが一致していません。終了…");
     fprintf(stderr, "%s\n", ero);
-    return;
+    return -1;
   }
 
   // パスワードを保存する
@@ -114,7 +114,7 @@ void addpass(char *file) {
     const char *ero = (strncmp(lang, "en", 2) == 0 ?
         "Failed to generate GPGME" : "GPGMEを創作に失敗");
     fprintf(stderr, "%s: %s\n", ero, gpgme_strerror(err));
-    return;
+    return -1;
   }
 
   // GPGMEは非対話的モードに設定
@@ -124,7 +124,7 @@ void addpass(char *file) {
         "Failed to set pinentry mode" : "pinentryモードを設定に失敗");
     fprintf(stderr, "%s: %s\n", ero, gpgme_strerror(err));
     gpgme_release(ctx);
-    return;
+    return -1;
   }
 
   // パスワードからデータオブジェクトを創作
@@ -134,7 +134,7 @@ void addpass(char *file) {
         "Failed to make data object" : "データオブジェクトを創作に失敗");
     fprintf(stderr, "%s: %s\n", ero, gpgme_strerror(err));
     gpgme_release(ctx);
-    return;
+    return -1;
   }
 
   gpgme_data_new(&out);
@@ -150,7 +150,7 @@ void addpass(char *file) {
     const char *ero = (strncmp(lang, "en", 2) == 0 ?
         "Failed to open .gpg-id file" : ".gpg-idファイルを開くに失敗");
     fprintf(stderr, "%s\n", ero);
-    return;
+    return -1;
   }
 
   char *keyid = malloc(256);
@@ -160,7 +160,7 @@ void addpass(char *file) {
     fprintf(stderr, "%s\n", ero);
     fclose(keyfile);
     free(keyid);
-    return;
+    return -1;
   }
 
   keyid[strcspn(keyid, "\n")] = 0;
@@ -172,7 +172,7 @@ void addpass(char *file) {
         "Failed to get key" : "鍵Dを受取に失敗");
     fprintf(stderr, "%s: %s\n", ero, gpgme_strerror(err));
     free(keyid);
-    return;
+    return -1;
   }
 
   if (key[0] == NULL) {
@@ -180,7 +180,7 @@ void addpass(char *file) {
         "Error: Key is NULL" : "エラー：鍵はNULLです");
     fprintf(stderr, "%s\n", ero);
     free(keyid);
-    return;
+    return -1;
   }
 
   free(keyid);
@@ -192,7 +192,7 @@ void addpass(char *file) {
         "Failed to encrypt" : "暗号化に失敗");
     fprintf(stderr, "%s: %s\n", ero, gpgme_strerror(err));
     cleanup(ctx, key[0], in, out);
-    return;
+    return -1;
   }
 
   // 暗号化したファイルを開く
@@ -202,7 +202,7 @@ void addpass(char *file) {
         "Failed to allocate memory" : "メモリを割当に失敗");
     fprintf(stderr, "%s\n", ero);
     cleanup(ctx, key[0], in, out);
-    return;
+    return -1;
   }
 
   // ディレクトリを創作
@@ -220,7 +220,7 @@ void addpass(char *file) {
       fprintf(stderr, "%s\n", ero);
       free(gpgpath);
       cleanup(ctx, key[0], in, out);
-      return;
+      return -1;
     }
   }
 
@@ -233,7 +233,7 @@ void addpass(char *file) {
     fprintf(stderr, "%s\n", ero);
     free(gpgpath);
     cleanup(ctx, key[0], in, out);
-    return;
+    return -1;
   }
 
   gpgfile = fopen(gpgpath, "wb");
@@ -243,7 +243,7 @@ void addpass(char *file) {
     fprintf(stderr, "%s\n", ero);
     free(gpgpath);
     cleanup(ctx, key[0], in, out);
-    return;
+    return -1;
   }
 
   // データが保存したかどうか確認
@@ -255,7 +255,7 @@ void addpass(char *file) {
     fclose(gpgfile);
     free(gpgpath);
     cleanup(ctx, key[0], in, out);
-    return;
+    return -1;
   }
 
   // 復号化したパスワードを表示する
@@ -271,7 +271,7 @@ void addpass(char *file) {
       fprintf(stderr, "%s\n", ero);
       free(gpgpath);
       cleanup(ctx, key[0], in, out);
-      return;
+      return -1;
     }
   }
 
@@ -283,4 +283,6 @@ void addpass(char *file) {
   const char *msg = (strncmp(lang, "en", 2) == 0 ?
       "The password got saved." : "パスワードを保存出来ました。");
   printf("%s\n", msg);
+
+  return 0;
 }

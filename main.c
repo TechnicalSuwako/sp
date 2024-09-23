@@ -9,6 +9,8 @@
 #include "src/otppass.h"
 #include "src/findpass.h"
 
+#include <unistd.h>
+
 const char *sofname = "sp";
 const char *version = "1.4.0";
 const char *avalopt = "adefgilosvy";
@@ -45,6 +47,33 @@ char *getfullpath(char *arg) {
   return fullPath;
 }
 
+void editpass(char *file) {
+  char *lang = getlang();
+
+#if defined(__HAIKU__)
+  const char *tmpfile = "/boot/system/cache/sp-tmp.gpg";
+#else
+  const char *tmpfile = "/tmp/sp-tmp.gpg";
+#endif
+  tmpcopy(file, tmpfile);
+  if (delpass(file, 1) != 0) {
+    if (strncmp(lang, "en", 2) == 0)
+      perror("Editing failed: Failed to delete.");
+    else perror("編集に失敗:削除に失敗");
+    return;
+  }
+  if (addpass(file) != 0) {
+    tmpcopy(tmpfile, file);
+    unlink(tmpfile);
+    if (strncmp(lang, "en", 2) == 0)
+      perror("Editing failed: Failed to add.");
+    else perror("編集に失敗:追加に失敗");
+    return;
+  }
+
+  unlink(tmpfile);
+}
+
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     usage();
@@ -78,8 +107,7 @@ int main(int argc, char *argv[]) {
     else if (strcmp(argv[1], "-a") == 0) addpass(argv[2]);
     else if (strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);
     else if (strcmp(argv[1], "-e") == 0) {
-      delpass(argv[2], 1);
-      addpass(argv[2]);
+      editpass(argv[2]);
     } else if (strcmp(argv[1], "-o") == 0) {
       char *fullPath = getfullpath(argv[2]);
       if (fullPath == NULL) return -1;

@@ -1,4 +1,5 @@
 #include "common.h"
+#include <stdio.h>
 #include <string.h>
 
 char *getbasedir(int trailing) {
@@ -71,6 +72,33 @@ int mkdir_r(const char *path, mode_t mode) {
   if (mkdir(tmp, mode) != 0 && errno != EEXIST) {
     return -1;
   }
+
+  return 0;
+}
+
+int tmpcopy(const char *inpath, const char *outpath) {
+  FILE *src = fopen(inpath, "rb");
+  if (!src) {
+    return -1;
+  }
+
+  FILE *dst = fopen(outpath, "wb");
+  if (!dst) {
+    fclose(src);
+    return -1;
+  }
+
+  size_t n, m;
+  unsigned char buf[8192];
+  do {
+    n = fread(buf, 1, sizeof buf, src);
+    if (n) m = fwrite(buf, 1, n, dst);
+    else   m = 0;
+  } while ((n > 0) && (n == m));
+  if (m) return -1;
+
+  fclose(src);
+  fclose(dst);
 
   return 0;
 }

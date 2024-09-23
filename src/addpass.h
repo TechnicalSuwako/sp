@@ -8,6 +8,6 @@
 
 #include "common.h"
 
-void addpass(char *file);
+int addpass(char *file);
 
 #endif

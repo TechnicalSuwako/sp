@@ -24,6 +24,7 @@ typedef struct {
 char *getbasedir(int trailing);
 char *getlang();
 int mkdir_r(const char *path, mode_t mode);
+int tmpcopy(const char *inpath, const char *outpath);
 
 // C言語のvector
 void initList(List *list);
