@@ -64,7 +64,7 @@ unsigned char *extract_secret(const char *otpauth_url, size_t *decoded_len) {
   return secret_decoded;
 }
 
-#if defined(__HAIKU__) || defined(__linux)
+#if defined(__HAIKU__)
 uint64_t htobe64(uint64_t counter) {
   uint64_t res = 0;
   uint8_t *dest = (uint8_t *)&res;
