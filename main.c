@@ -8,13 +8,14 @@
 #include "src/genpass.h"
 #include "src/otppass.h"
 #include "src/findpass.h"
+#include "src/vulnpass.h"
 
 #include <unistd.h>
 
 const char *sofname = "sp";
-const char *version = "1.4.0";
-const char *avalopt = "adefgilosvy";
-const char *madefor = "simpas 1.0.0";
+const char *version = "1.5.0";
+const char *avalopt = "abdefgilosvy";
+const char *madefor = "simpas 1.1.0";
 
 void usage() {
   printf("%s-%s (%s)\nusage: %s [-%s]\n",
@@ -127,10 +128,10 @@ int main(int argc, char *argv[]) {
     if (basePath == NULL) return -1;
 
     if      (strcmp(argv[1], "-l") == 0) listpass(basePath, 0);
+    else if (strcmp(argv[1], "-b") == 0) vulnpass(basePath);
     else if (strcmp(argv[1], "-v") == 0) {
       printf("%s-%s (%s)\n", sofname, version, madefor);
-    }
-    else {
+    } else {
       usage();
       free(basePath);
       return 1;

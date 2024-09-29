@@ -23,6 +23,7 @@ const char *showpass(char *file) {
   gpgme_ctx_t ctx;
   gpgme_error_t err;
   gpgme_data_t in = NULL, out = NULL;
+  char *gpgpath = NULL;
   FILE *gpgfile;
 
   // GPGMEライブラリを設置
@@ -41,12 +42,19 @@ const char *showpass(char *file) {
 
   // OpenPGPプロトコールを設定
   gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
+  if (err) {
+    if (strncmp(lang, "en", 2) == 0)
+      fprintf(stderr, "Failed to set OpenPGP protocol: %s\n", gpgme_strerror(err));
+    else fprintf(stderr, "OpenPGP付トロコールの設置に失敗：%s\n", gpgme_strerror(err));
+    clean_up(ctx, in, out, gpgfile, gpgpath);
+    return NULL;
+  }
 
   // 暗号化したタイルを開く
   char *basedir = getbasedir(1);
   char *ext = ".gpg";
   int alllen = snprintf(NULL, 0, "%s%s%s", basedir, file, ext) + 1;
-  char *gpgpath = malloc(alllen);
+  gpgpath = malloc(alllen);
   if (gpgpath == NULL) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to allocate memeory");
@@ -92,8 +100,10 @@ const char *showpass(char *file) {
   err = gpgme_op_decrypt(ctx, in, out);
   if (err) {
     if (strncmp(lang, "en", 2) == 0)
-      fprintf(stderr, "Failed to decrypt: %s\n", gpgme_strerror(err));
-    else fprintf(stderr, "復号化に失敗： %s\n", gpgme_strerror(err));
+      fprintf(stderr, "Failed to decrypt: %s (source: %s)\n",
+          gpgme_strerror(err), gpgme_strsource(err));
+    else fprintf(stderr, "復号化に失敗： %s (元： %s)\n",
+          gpgme_strerror(err), gpgme_strsource(err));
 
     // 掃除
     clean_up(ctx, in, out, gpgfile, gpgpath);
@@ -102,8 +112,10 @@ const char *showpass(char *file) {
 
   // 復号化したパスワードを表示する
   gpgme_data_seek(out, 0, SEEK_SET);
+  size_t bufsize = 512;
+  size_t totsize = 0;
   char buffer[512];
-  char *res = malloc(512 * sizeof(char));
+  char *res = malloc(bufsize);
   if (res == NULL) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to allocate memory");
@@ -113,15 +125,22 @@ const char *showpass(char *file) {
   }
 
   ssize_t read_bytes;
-  int i = 0;
 
   while ((read_bytes = gpgme_data_read(out, buffer, sizeof(buffer) - 1)) > 0) {
-    memcpy(res + i, buffer, read_bytes);
-    i += read_bytes;
+    if (totsize + read_bytes >= bufsize) {
+      bufsize *= 2;
+      res = realloc(res, bufsize);
+      if (res == NULL) {
+        perror("Failed to reallocate memory");
+        clean_up(ctx, in, out, gpgfile, gpgpath);
+        return NULL;
+      }
+    }
+    memcpy(res + totsize, buffer, read_bytes);
+    totsize += read_bytes;
   }
 
-  res[i] = '\0';
-  if (res[i-1] == '\n') res[i-1] = '\0';
+  res[totsize] = '\0';
 
   // 掃除
   clean_up(ctx, in, out, gpgfile, gpgpath);
