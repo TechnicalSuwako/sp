@@ -24,7 +24,7 @@ const char *showpass(char *file) {
   gpgme_error_t err;
   gpgme_data_t in = NULL, out = NULL;
   char *gpgpath = NULL;
-  FILE *gpgfile;
+  FILE *gpgfile = NULL;
 
   // GPGMEライブラリを設置
   setlocale(LC_ALL, "");
