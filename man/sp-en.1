@@ -3,13 +3,24 @@
 sp - Simple Password Manager
 .br
 .B sp
-[-i] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-g \fI\,length\fR [\fI\,secure\fR|\fI\,risk\fR]]
+[-bfi] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]]
 .SH DESCRIPTION
 .PP
 Simple Password Manager
 .TP
 \fB\,a\fR \fI\,password\fR
 Add password
+.TP
+\fB\,b\fR
+Check for breached passwords (internet connection is required)
+.TP
+\fB\,c\fR \fI,all|length|strength|duplicate\fR
+Check for password length, strength, or duplicates.
+.br
+length = Check for password length
+strength = Check for password strength
+duplicate = Check for duplicate passwords
+all = Check all of the above
 .TP
 \fB\,d\fR \fI\,password\fR
 Delete password

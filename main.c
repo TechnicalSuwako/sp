@@ -9,12 +9,13 @@
 #include "src/otppass.h"
 #include "src/findpass.h"
 #include "src/vulnpass.h"
+#include "src/chkpass.h"
 
 #include <unistd.h>
 
 const char *sofname = "sp";
 const char *version = "1.5.0";
-const char *avalopt = "abdefgilosvy";
+const char *avalopt = "abcdefgilosvy";
 const char *madefor = "simpas 1.1.0";
 
 void usage() {
@@ -119,6 +120,11 @@ int main(int argc, char *argv[]) {
       if (fullPath == NULL) return -1;
       findpass(fullPath, argv[2]);
       free(fullPath);
+    } else if (strcmp(argv[1], "-c") == 0) {
+      char *fullPath = getfullpath(NULL);
+      if (fullPath == NULL) return -1;
+      chkpass(fullPath, argv[2]);
+      free(fullPath);
     } else {
       usage();
       return 1;
@@ -138,8 +144,8 @@ int main(int argc, char *argv[]) {
     }
     free(basePath);
   } else {
-     usage();
-     return 1;
+    usage();
+    return 1;
   }
 
   return 0;

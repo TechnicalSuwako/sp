@@ -3,13 +3,24 @@
 sp - Simple Password Manager
 .br
 .B sp
-[-i] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-g \fI\,length\fR [\fI\,secure\fR|\fI\,risk\fR]]
+[-bfi] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]]
 .SH 説明
 .PP
 シンプルなパスワードマネージャー。
 .TP
 \fB\,a\fR \fI\,password\fR
 パスワードを追加
+.TP
+\fB\,b\fR
+漏洩されたパスワードを確認（インターネット接続が必須）
+.TP
+\fB\,c\fR \fI,all|length|strength|duplicate\fR
+パスワードの長さ、強さ、や服数度を確認
+.br
+length＝パスワードの長さの確認
+strength＝パスワードの強さの確認
+duplicate＝服数パスワードが同じかどうか確認
+all＝上記の全部の確認
 .TP
 \fB\,d\fR \fI\,password\fR
 パスワードを削除
