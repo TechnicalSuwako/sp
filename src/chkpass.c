@@ -42,7 +42,7 @@ void chkLenPass(const char *path, const char *pass, char *lang) {
   } else if (strlen(pass) >= minimumlen && strlen(pass) < recommendlen) {
     printf("【W】");
     if (strncmp(lang, "en", 2) == 0) {
-      printf("The password \"%s\" is long enough, but for optimal security,"
+      printf("The password \"%s\" is long enough, but for optimal security, "
           "%ld characters is recommended.\n",
           path, recommendlen);
     } else {
@@ -134,7 +134,7 @@ void chkpass(const char *dpath, const char *mode) {
   for (size_t i = 0; i < chkDispaths.size; i++) {
     const char *pass = showpass(getElement(&chkDispaths, i));
     if (!pass) continue;
-    if (strstr(pass, "otpauth://totp/")) continue;
+    if (strncmp(pass, "otpauth://totp/", strlen(pass)) == 0) continue;
 
     if (strncmp(mode, "all", 3) == 0) {
       // 全部を確認する
@@ -150,7 +150,6 @@ void chkpass(const char *dpath, const char *mode) {
     } else if (strncmp(mode, "duplicate", 9) == 0) {
       // 複数回同じパスワードの確認
       chkDupPass(getElement(&chkDispaths, i), pass, lang);
-    } else {
     }
   }
 
