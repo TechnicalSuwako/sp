@@ -3,7 +3,7 @@
 sp - Simple Password Manager
 .br
 .B sp
-[-bfi] [-i \fI\,gpg-id\fR] [-adeos \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]] [-y \fI\,password\fR [\fI,seconds\fR]]
+[-bfi] [-i \fI\,gpg-id\fR] [-adeos \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]] [-Oy \fI\,password\fR [\fI,seconds\fR]]
 .SH 説明
 .PP
 シンプルなパスワードマネージャー。
@@ -45,6 +45,11 @@ GPGと使ってパスワードストレージを初期設定
 .TP
 \fB\,o\fR \fI\,password\fR
 ワンタイムパスワード（TOTP）を表示
+.TP
+\fB\,O\fR \fI\,password\fR \fI,seconds\fR
+ワンタイムパスワード（TOTP）をコピー
+.br
+デフォルトは30秒です。
 .TP
 \fB\,s\fR \fI\,password\fR
 パスワードを表示

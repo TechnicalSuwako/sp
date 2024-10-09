@@ -3,7 +3,7 @@
 sp - Simple Password Manager
 .br
 .B sp
-[-bfi] [-i \fI\,gpg-id\fR] [-adeos \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]] [-y \fI\,password\fR [\fI,seconds\fR]]
+[-bfi] [-i \fI\,gpg-id\fR] [-adeos \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]] [-Oy \fI\,password\fR [\fI,seconds\fR]]
 .SH DESCRIPTION
 .PP
 Simple Password Manager
@@ -44,8 +44,12 @@ Initialize password storage using GPG
 Show a list of passwords
 .TP
 \fB\,o\fR \fI\,password\fR
-ワンタイムパスワード（TOTP）を表示
 Show one time password (TOTP)
+.TP
+\fB\,O\fR \fI\,password\fR \fI\,seconds\fR
+Copy one time password (TOTP)
+.br
+The default is 30 seconds.
 .TP
 \fB\,s\fR \fI\,password\fR
 Show password

@@ -1,6 +1,8 @@
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 
+#include <unistd.h>
+
 #if defined(__APPLE)
 #include <libkern/OSByteOrder.h>
 #define htobe64(x) OSSwapHostToBigInt64(x)
@@ -107,8 +109,18 @@ uint32_t generate_totp(const char *secret, uint64_t counter) {
   return truncated_hash % 1000000;
 }
 
-void otppass(char *file) {
+void otppass(char *file, int isCopy, int copyTimeout) {
+  if (isCopy == 1 && copyTimeout > 300) copyTimeout = 300;
   char *lang = getlang();
+
+  // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
+  if (isCopy == 1 && getenv("DISPLAY") == NULL) {
+    if (strncmp(lang, "en", 2) == 0)
+      puts("There is no X session, so running 'sp -o'.");
+    else puts("Xセッションではありませんので、「sp -o」を実行します。");
+    otppass(file, 0, 0);
+    return;
+  }
 
   gpgme_ctx_t ctx;
   gpgme_error_t err;
@@ -129,6 +141,7 @@ void otppass(char *file) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to read the GPG file");
     else perror("GPGファイルを読込に失敗");
+    gpgme_release(ctx);
     exit(1);
   }
 
@@ -137,6 +150,8 @@ void otppass(char *file) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to read the GPG data");
     else perror("GPGデータを読込に失敗");
+    gpgme_release(ctx);
+    gpgme_data_release(in);
     exit(1);
   }
 
@@ -145,6 +160,8 @@ void otppass(char *file) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to decrypt the GPG");
     else perror("GPGを復号化に失敗");
+    gpgme_release(ctx);
+    gpgme_data_release(in);
     exit(1);
   }
 
@@ -153,6 +170,8 @@ void otppass(char *file) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to get the GPG");
     else perror("GPGを受取に失敗");
+    gpgme_data_release(in);
+    gpgme_release(ctx);
     exit(1);
   }
 
@@ -164,7 +183,9 @@ void otppass(char *file) {
     if (strncmp(lang, "en", 2) == 0)
       perror("Failed to decode or export secret");
     else perror("シークレットの抽出又はデコードに失敗しました");
-    free(secret);
+    gpgme_data_release(in);
+    gpgme_release(ctx);
+    gpgme_free(secret);
     exit(1);
   }
 
@@ -179,5 +200,35 @@ void otppass(char *file) {
   gpgme_free(secret);
   free(secret_decoded);
 
-  printf("%06d\n", otp);
+  if (isCopy) {
+    char cmd[64];
+    snprintf(cmd, sizeof(cmd), "echo -n %06d | xclip -selection clipboard", otp);
+    int ret = system(cmd);
+    if (ret != 0) {
+      char *ero = (strncmp(lang, "en", 2) == 0 ?
+          "Failed to copy OTP." : "OTPをコピーに失敗。");
+      fprintf(stderr, "%s\n", ero);
+    }
+
+    // 何（デフォルトは30）秒後、クリップボードから削除する
+    if (strncmp(lang, "en", 2) == 0)
+      printf(
+        "%s\n%s%d%s\n",
+        "Added the one time password to the clipboard.",
+        "After ",
+        copyTimeout,
+        " seconds it'll be deleted from the clipboard."
+      );
+    else
+      printf(
+      "%s\n%d%s\n",
+        "ワンタイムパスワードをクリップボードに追加しました。",
+        copyTimeout,
+        "秒後はクリップボードから取り消されます。"
+      );
+    sleep(copyTimeout);
+    system("echo -n \"\" | xclip -selection clipboard");
+  } else {
+    printf("%06d\n", otp);
+  }
 }

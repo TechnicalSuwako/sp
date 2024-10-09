@@ -10,7 +10,7 @@ void yankpass(char *file, int copyTimeout) {
   char *lang = getlang();
 
   // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
-  if (getenv("DISPLAY") == NULL) { 
+  if (getenv("DISPLAY") == NULL) {
     if (strncmp(lang, "en", 2) == 0)
       puts("There is no X session, so running 'sp -s'.");
     else puts("Xセッションではありませんので、「sp -s」を実行します。");
@@ -89,7 +89,6 @@ void yankpass(char *file, int copyTimeout) {
   // xclipを準備して
   FILE *pipe = popen("xclip -selection clipboard", "w");
   if (pipe == NULL) {
-
     // 掃除
     fclose(gpgfile);
     free(gpgpath);

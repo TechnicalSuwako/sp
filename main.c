@@ -15,7 +15,7 @@
 
 const char *sofname = "sp";
 const char *version = "1.5.0";
-const char *avalopt = "abcdefgilosvy";
+const char *avalopt = "abcdefgiloOsvy";
 const char *madefor = "simpas 1.1.0";
 
 void usage() {
@@ -113,7 +113,12 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(argv[1], "-o") == 0) {
       char *fullPath = getfullpath(argv[2]);
       if (fullPath == NULL) return -1;
-      otppass(fullPath);
+      otppass(fullPath, 0, 0);
+      free(fullPath);
+    } else if (strcmp(argv[1], "-O") == 0) {
+      char *fullPath = getfullpath(argv[2]);
+      if (fullPath == NULL) return -1;
+      otppass(fullPath, 1, 30);
       free(fullPath);
     } else if (strcmp(argv[1], "-f") == 0) {
       char *fullPath = getfullpath(NULL);
@@ -134,6 +139,13 @@ int main(int argc, char *argv[]) {
       int i;
       if (sscanf(argv[3], "%d", &i) == 0) yankpass(argv[2], 45);
       else yankpass(argv[2], atoi(argv[3]));
+    } else if (strcmp(argv[1], "-O") == 0) {
+      char *fullPath = getfullpath(argv[2]);
+      if (fullPath == NULL) return -1;
+      int i;
+      if (sscanf(argv[3], "%d", &i) == 0) otppass(fullPath, 1, 30);
+      else otppass(fullPath, 1, atoi(argv[3]));
+      free(fullPath);
     }
   } else if (argc == 2) {
     char *basePath = getfullpath(NULL);
