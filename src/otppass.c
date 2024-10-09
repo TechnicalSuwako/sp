@@ -113,11 +113,13 @@ void otppass(char *file, int isCopy, int copyTimeout) {
   if (isCopy == 1 && copyTimeout > 300) copyTimeout = 300;
   char *lang = getlang();
 
-  // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
-  if (isCopy == 1 && getenv("DISPLAY") == NULL) {
+  int isGay = (getenv("WAYLAND_DISPLAY") != NULL);
+
+  // Xセッションではない場合（例えば、SSH、TTY等）、otppass()を実行して
+  if (isCopy == 1 && getenv("DISPLAY") == NULL && getenv("WAYLAND_DISPLAY") == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      puts("There is no X session, so running 'sp -o'.");
-    else puts("Xセッションではありませんので、「sp -o」を実行します。");
+      puts("There is no X or Wayland session, so running 'sp -o'.");
+    else puts("X又はWaylandセッションではありませんので、「sp -o」を実行します。");
     otppass(file, 0, 0);
     return;
   }
@@ -202,11 +204,13 @@ void otppass(char *file, int isCopy, int copyTimeout) {
 
   if (isCopy) {
     char cmd[64];
-    snprintf(cmd, sizeof(cmd), "echo -n %06d | xclip -selection clipboard", otp);
+    if (isGay) snprintf(cmd, sizeof(cmd), "echo -n %06d | wl-copy", otp);
+    else snprintf(cmd, sizeof(cmd), "echo -n %06d | xclip -selection clipboard", otp);
+
     int ret = system(cmd);
     if (ret != 0) {
       char *ero = (strncmp(lang, "en", 2) == 0 ?
-          "Failed to copy OTP." : "OTPをコピーに失敗。");
+          "Failed to copy OTP." : "ワンタイムパスワードをコピーに失敗。");
       fprintf(stderr, "%s\n", ero);
     }
 
@@ -226,8 +230,11 @@ void otppass(char *file, int isCopy, int copyTimeout) {
         copyTimeout,
         "秒後はクリップボードから取り消されます。"
       );
+
     sleep(copyTimeout);
-    system("echo -n \"\" | xclip -selection clipboard");
+
+    if (isGay) system("echo -n \"\" | wl-copy");
+    else system("echo -n \"\" | xclip -selection clipboard");
   } else {
     printf("%06d\n", otp);
   }

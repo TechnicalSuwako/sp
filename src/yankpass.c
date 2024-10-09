@@ -9,11 +9,13 @@ void yankpass(char *file, int copyTimeout) {
   if (copyTimeout > 300) copyTimeout = 300;
   char *lang = getlang();
 
-  // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
-  if (getenv("DISPLAY") == NULL) {
+  int isGay = (getenv("WAYLAND_DISPLAY") != NULL);
+
+  // Xセッションではない場合（例えば、SSH、TTY等）、showpass()を実行して
+  if (getenv("DISPLAY") == NULL && getenv("WAYLAND_DISPLAY") == NULL) {
     if (strncmp(lang, "en", 2) == 0)
-      puts("There is no X session, so running 'sp -s'.");
-    else puts("Xセッションではありませんので、「sp -s」を実行します。");
+      puts("There is no X or Wayland session, so running 'sp -s'.");
+    else puts("X又はWaylandセッションではありませんので、「sp -s」を実行します。");
     showpass(file);
     return;
   }
@@ -86,8 +88,12 @@ void yankpass(char *file, int copyTimeout) {
     return;
   }
 
-  // xclipを準備して
-  FILE *pipe = popen("xclip -selection clipboard", "w");
+  // xclip又はwl-copyを準備して
+  char *cmd;
+  if (isGay) cmd = "wl-copy";
+  else cmd = "xclip -selection clipboard";
+
+  FILE *pipe = popen(cmd, "w");
   if (pipe == NULL) {
     // 掃除
     fclose(gpgfile);
@@ -133,7 +139,8 @@ void yankpass(char *file, int copyTimeout) {
       "秒後はクリップボードから取り消されます。"
     );
   sleep(copyTimeout);
-  system("echo -n | xclip -selection clipboard");
+  if (isGay) system("echo -n \"\" | wl-copy");
+  else system("echo -n \"\" | xclip -selection clipboard");
 
   // 掃除
   fclose(gpgfile);
