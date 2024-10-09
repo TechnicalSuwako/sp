@@ -105,12 +105,11 @@ install:
 
 install-zsh:
 	mkdir -p ${DESTDIR}${DATAPREFIX}/zsh/site-functions
-	cp sp-completion.zsh ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_sp
-
+	cp ${NAME}-completion.zsh ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_${NAME}
 uninstall:
 	rm -rf ${DESTDIR}${PREFIX}/bin/${NAME}
 	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-en.1
 	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-jp.1
-	rm -rf ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_sp
+	rm -rf ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_${NAME}
 
 .PHONY: all clean dist man release install install-zsh uninstall
