@@ -3,7 +3,7 @@
 sp - Simple Password Manager
 .br
 .B sp
-[-bfi] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]]
+[-bfi] [-i \fI\,gpg-id\fR] [-adeos \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]] [-y \fI\,password\fR [\fI,seconds\fR]]
 .SH DESCRIPTION
 .PP
 Simple Password Manager
@@ -53,8 +53,10 @@ Show password
 \fB\,v\fR
 Show version
 .TP
-\fB\,y\fR \fI\,password\fR
+\fB\,y\fR \fI\,password\fR \fI,seconds\fR
 Copy password to the clipboard without showing the password (Xorg-only)
+.br
+The default is 45 seconds.
 .SH LANGUAGE
 The default language is Japanese. In order to use English,
 .br

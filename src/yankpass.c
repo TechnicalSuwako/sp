@@ -5,7 +5,7 @@
 #include "yankpass.h"
 #include "showpass.h"
 
-void yankpass(char *file) {
+void yankpass(char *file, int copyTimeout) {
   char *lang = getlang();
 
   // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
@@ -116,20 +116,23 @@ void yankpass(char *file) {
 
   pclose(pipe);
 
-  // 45秒後、クリップボードから削除する
+  // 何（デフォルトは45）秒後、クリップボードから削除する
   if (strncmp(lang, "en", 2) == 0)
     printf(
-      "%s\n%s\n",
+      "%s\n%s%d%s\n",
       "Added password to the clipboard.",
-      "After 45 seconds it'll be deleted from the clipboard."
+      "After ",
+      copyTimeout,
+      " seconds it'll be deleted from the clipboard."
     );
   else
     printf(
-      "%s\n%s\n",
+      "%s\n%d%s\n",
       "パスワードをクリップボードに追加しました。",
-      "45秒後はクリップボードから取り消されます。"
+      copyTimeout,
+      "秒後はクリップボードから取り消されます。"
     );
-  sleep(45);
+  sleep(copyTimeout);
   system("echo -n | xclip -selection clipboard");
 
   // 掃除

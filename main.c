@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
       if (pass == NULL) return -1;
       printf("%s\n", pass);
     }
-    else if (strcmp(argv[1], "-y") == 0) yankpass(argv[2]);
+    else if (strcmp(argv[1], "-y") == 0) yankpass(argv[2], 45);
     else if (strcmp(argv[1], "-a") == 0) addpass(argv[2]);
     else if (strcmp(argv[1], "-d") == 0) delpass(argv[2], 0);
     else if (strcmp(argv[1], "-e") == 0) {
@@ -128,6 +128,12 @@ int main(int argc, char *argv[]) {
     } else {
       usage();
       return 1;
+    }
+  } else if (argc == 4) {
+    if (strcmp(argv[1], "-y") == 0) {
+      int i;
+      if (sscanf(argv[3], "%d", &i) == 0) yankpass(argv[2], 45);
+      else yankpass(argv[2], atoi(argv[3]));
     }
   } else if (argc == 2) {
     char *basePath = getfullpath(NULL);

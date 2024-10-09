@@ -3,7 +3,7 @@
 sp - Simple Password Manager
 .br
 .B sp
-[-bfi] [-i \fI\,gpg-id\fR] [-adeosy \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]]
+[-bfi] [-i \fI\,gpg-id\fR] [-adeos \fI\,password\fR] [-c \fI,all\fR|\fI,length\fR|\fI,strength\fR|\fI,duplicate\fR] [-g [\fI\,length\fR] [\fI\,secure\fR|\fI\,risk\fR]] [-y \fI\,password\fR [\fI,seconds\fR]]
 .SH 説明
 .PP
 シンプルなパスワードマネージャー。
@@ -52,8 +52,10 @@ GPGと使ってパスワードストレージを初期設定
 \fB\,v\fR
 バージョンを表示
 .TP
-\fB\,y\fR \fI\,password\fR
+\fB\,y\fR \fI\,password\fR \fI,seconds\fR
 パスワードを表示せずクリップボードにコピーする（Xorgのみ）
+.br
+デフォルトは45秒です。
 .SH LANGUAGE
 デフォルトの言語は日本語ですが、英語で利用するには、
 .br
