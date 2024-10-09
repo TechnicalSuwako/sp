@@ -6,6 +6,7 @@
 #include "showpass.h"
 
 void yankpass(char *file, int copyTimeout) {
+  if (copyTimeout > 300) copyTimeout = 300;
   char *lang = getlang();
 
   // Xセッションではない場合（例えば、SSH、TTY、Gayland等）、showpass()を実行して
