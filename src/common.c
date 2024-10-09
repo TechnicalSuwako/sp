@@ -253,3 +253,21 @@ void freeList(List *list) {
   list->tail = NULL;
   list->size = 0;
 }
+
+void handle_sigint(int sig) {
+  (void)sig;
+
+  if (getenv("WAYLAND_DISPLAY") != NULL) {
+    system("echo -n \"\" | wl-copy");
+  } else {
+    system("echo -n \"\" | xclip -selection clipboard");
+  }
+
+  if (strncmp(getlang(), "en", 2) == 0) {
+    printf("\nClipboard cleared and program aborted.\n");
+  } else {
+    printf("\nクリップボードをクリアし、プログラムが中止されました。\n");
+  }
+
+  exit(0);
+}

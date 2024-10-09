@@ -124,6 +124,11 @@ void otppass(char *file, int isCopy, int copyTimeout) {
     return;
   }
 
+  // CTRL + Cを押す場合
+  if (isCopy) {
+    signal(SIGINT, handle_sigint);
+  }
+
   gpgme_ctx_t ctx;
   gpgme_error_t err;
   gpgme_data_t in, out;

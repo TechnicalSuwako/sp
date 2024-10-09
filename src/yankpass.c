@@ -39,6 +39,9 @@ void yankpass(char *file, int copyTimeout) {
     return;
   }
 
+  // CTRL + Cを押す場合
+  signal(SIGINT, handle_sigint);
+
   // OpenPGPプロトコールを設定
   gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
 

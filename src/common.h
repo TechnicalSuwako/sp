@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,6 +28,7 @@ int mkdir_r(const char *path, mode_t mode);
 int tmpcopy(const char *inpath, const char *outpath);
 void scanDir(const char *dpath, const char *rpath, List *fpaths,
     List *fullpaths, List *dispaths);
+void handle_sigint(int sig);
 
 // C言語のvector
 void initList(List *list);
