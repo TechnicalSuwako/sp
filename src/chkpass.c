@@ -74,7 +74,7 @@ void chkCharPass(const char *path, const char *pass, char *lang) {
           path);
     } else {
       printf("パスワード「%s」は弱すぎます！強いパスワードは最大1大文字、1小文字、"
-          "1数字、及び1特別な文字が含みます。\n",
+          "1数字、及び1記号の文字が含みます。\n",
           path);
     }
 
