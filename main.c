@@ -14,9 +14,9 @@
 #include <unistd.h>
 
 const char *sofname = "sp";
-const char *version = "1.5.0";
+const char *version = "1.5.1";
 const char *avalopt = "abcdefgiloOsvy";
-const char *madefor = "simpas 1.1.0";
+const char *madefor = "simpas 1.1.1";
 
 void usage() {
   printf("%s-%s (%s)\nusage: %s [-%s]\n",

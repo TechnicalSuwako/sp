@@ -1,3 +1,6 @@
+#include <ctype.h>
+#include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "base32.h"
@@ -8,10 +11,28 @@ int char_to_val(char c) {
   return ptr ? ptr - base32_alphabet : -1;
 }
 
+char *to_upper(const char *str) {
+  if (str == NULL) return NULL;
+
+  size_t len = strlen(str);
+  char *res = (char *)malloc(len + 1);
+
+  if (res == NULL) return NULL;
+
+  for (size_t i = 0; i < len; i++) {
+    res[i] = toupper(str[i]);
+  }
+
+  res[len] = '\0';
+
+  return res;
+}
+
 unsigned char *base32_decode(const char *encoded, size_t *out_len) {
-  size_t encoded_len = strlen(encoded);
+  char *encoded_up = to_upper(encoded);
+  size_t encoded_len = strlen(encoded_up);
   size_t padding = 0;
-  for (int i = encoded_len - 1; i >= 0 && encoded[i] == '='; --i) {
+  for (int i = encoded_len - 1; i >= 0 && encoded_up[i] == '='; --i) {
     ++padding;
   }
 
@@ -23,7 +44,7 @@ unsigned char *base32_decode(const char *encoded, size_t *out_len) {
 
   int buffer = 0, bits_left = 0, count = 0;
   for (size_t i = 0; i < encoded_len - padding; ++i) {
-    int val = char_to_val(encoded[i]);
+    int val = char_to_val(encoded_up[i]);
     if (val < 0) {
       free(decoded);
       return NULL;

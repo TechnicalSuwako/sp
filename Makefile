@@ -106,6 +106,12 @@ install:
 install-zsh:
 	mkdir -p ${DESTDIR}${DATAPREFIX}/zsh/site-functions
 	cp ${NAME}-completion.zsh ${DESTDIR}${DATAPREFIX}/zsh/site-functions/_${NAME}
+
+publish:
+	rsync -rtvzP release/bin/${VERSION} 192.168.0.143:/zroot/repo/bin/${NAME}
+	rsync -rtvzP release/src/* 192.168.0.143:/zroot/repo/src/${NAME}
+	rsync -rtvzP release/man/* 192.168.0.143:/zroot/repo/man/${NAME}
+
 uninstall:
 	rm -rf ${DESTDIR}${PREFIX}/bin/${NAME}
 	rm -rf ${DESTDIR}${MANPREFIX}/man1/${NAME}-en.1
